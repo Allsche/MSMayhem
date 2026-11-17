@@ -1,0 +1,2971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>M-Series Mayhem — MLBB World Championship Draft</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-outer: #0c1938;
+      --bg-card: #122654;
+      --bg-panel: #17316b;
+      --gold: #f5c451;
+      --gold-bright: #fff3c4;
+      --gold-dim: #b47b22;
+      --blue-hex: #22d3ee;
+      --blue-border: #38bdf8;
+      --red-enemy: #fb7185;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background-color: #0b1736;
+      background-image:
+        radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.36) 0%, rgba(29, 78, 216, 0.28) 38%, rgba(10, 21, 51, 0.96) 82%),
+        linear-gradient(135deg, #0d1f47 0%, #152e69 50%, #0b1838 100%);
+      color: #f8fafc;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 12px;
+    }
+
+    .font-display {
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.06em;
+    }
+
+    /* MLBB Celestial Lobby Main Frame */
+    .hex-frame {
+      width: 100%;
+      max-width: 460px;
+      background: linear-gradient(180deg, rgba(21, 45, 98, 0.95) 0%, rgba(12, 26, 61, 0.98) 100%);
+      border: 1.5px solid rgba(245, 196, 81, 0.65);
+      border-radius: 16px;
+      box-shadow: 0 22px 55px rgba(4, 10, 28, 0.78), inset 0 0 0 1px rgba(125, 211, 252, 0.25);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* MLBB Top Lobby Header */
+    .hex-header {
+      background:
+        linear-gradient(180deg, rgba(30, 64, 138, 0.94) 0%, rgba(17, 37, 84, 0.98) 100%),
+        repeating-linear-gradient(90deg, rgba(245, 196, 81, 0.08) 0px, rgba(245, 196, 81, 0.08) 1px, transparent 1px, transparent 24px);
+      border-bottom: 1.5px solid rgba(245, 196, 81, 0.55);
+      padding: 14px 16px 12px;
+      text-align: center;
+      position: relative;
+    }
+
+    /* MLBB Gold & Royal Blue Cards */
+    .corner-card {
+      position: relative;
+      background: linear-gradient(180deg, rgba(27, 57, 122, 0.92) 0%, rgba(15, 34, 77, 0.96) 100%);
+      border: 1px solid rgba(245, 196, 81, 0.55);
+      border-radius: 8px;
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .corner-card:hover {
+      border-color: #fff3c4;
+      box-shadow: 0 0 20px rgba(245, 196, 81, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .corner-card:active {
+      transform: scale(0.985);
+    }
+
+    .corner-tl, .corner-tr, .corner-bl, .corner-br {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-color: var(--gold);
+      pointer-events: none;
+    }
+    .corner-tl { top: 4px; left: 4px; border-top: 2px solid; border-left: 2px solid; }
+    .corner-tr { top: 4px; right: 4px; border-top: 2px solid; border-right: 2px solid; }
+    .corner-bl { bottom: 4px; left: 4px; border-bottom: 2px solid; border-left: 2px solid; }
+    .corner-br { bottom: 4px; right: 4px; border-bottom: 2px solid; border-right: 2px solid; }
+
+    /* MLBB Radiant Gold "Mulai Game / Classic" Action Button */
+    .btn-spin {
+      background: linear-gradient(180deg, #fef08a 0%, #f5c451 48%, #d99126 100%);
+      border: 1.5px solid #fffbeb;
+      box-shadow: 0 4px 20px rgba(245, 196, 81, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.85);
+      color: #271704;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+      letter-spacing: 0.16em;
+      transition: all 0.18s ease;
+    }
+    .btn-spin:hover:not(:disabled) {
+      background: linear-gradient(180deg, #fef9c3 0%, #fcd34d 50%, #e5a030 100%);
+      box-shadow: 0 6px 26px rgba(253, 224, 71, 0.65), inset 0 1px 3px rgba(255, 255, 255, 0.95);
+      color: #1c1002;
+    }
+
+    .btn-reroll {
+      background: linear-gradient(180deg, #1d4ed8 0%, #1e3a8a 100%);
+      border: 1px solid #7dd3fc;
+      color: #f0f9ff;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.45);
+      transition: all 0.18s ease;
+    }
+    .btn-reroll:hover:not(:disabled) {
+      background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+      border-color: #fde047;
+    }
+    .btn-reroll:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Event Banners */
+    .event-banner-win {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.34) 0%, rgba(14, 46, 56, 0.94) 24%, rgba(13, 33, 58, 0.96) 100%);
+      border: 1px solid rgba(52, 211, 153, 0.75);
+      border-left: 4px solid #34d399;
+      color: #ecfdf5;
+      animation: slideInEvent 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .event-banner-loss {
+      background: linear-gradient(90deg, rgba(244, 63, 94, 0.34) 0%, rgba(56, 20, 42, 0.94) 24%, rgba(36, 17, 44, 0.96) 100%);
+      border: 1px solid rgba(251, 113, 133, 0.75);
+      border-left: 4px solid #fb7185;
+      color: #fff1f2;
+      animation: slideInEvent 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes slideInEvent {
+      from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes pulseSlot {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.65); }
+      50% { box-shadow: 0 0 0 6px rgba(34, 211, 238, 0); }
+    }
+
+    .slot-pulse {
+      animation: pulseSlot 1.8s infinite;
+    }
+
+    @keyframes spinReel {
+      0% { transform: translateY(-6px); opacity: 0.5; }
+      50% { transform: translateY(4px); opacity: 0.85; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    .reel-flash {
+      animation: spinReel 0.14s ease-in-out infinite;
+    }
+
+    @keyframes hexSlotGlow {
+      0%, 100% {
+        border-color: rgba(56, 189, 248, 0.85);
+        box-shadow: 0 0 18px rgba(56, 189, 248, 0.4), inset 0 0 12px rgba(56, 189, 248, 0.2);
+      }
+      50% {
+        border-color: rgba(250, 204, 21, 0.95);
+        box-shadow: 0 0 24px rgba(250, 204, 21, 0.55), inset 0 0 16px rgba(250, 204, 21, 0.25);
+      }
+    }
+
+    .slot-spinning {
+      animation: hexSlotGlow 0.28s ease-in-out infinite;
+    }
+
+    .map-token-actor {
+      transition: left 0.85s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.85s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes tokenDramaticBounce {
+      0% { transform: translate(-50%, -50%) scale(1); }
+      25% { transform: translate(-50%, -68%) scale(1.28); }
+      50% { transform: translate(-50%, -44%) scale(1.12); }
+      75% { transform: translate(-50%, -58%) scale(1.24); }
+      100% { transform: translate(-50%, -50%) scale(1.18); }
+    }
+
+    @keyframes actionRingPulse {
+      0% { box-shadow: 0 0 0 0 rgba(253, 224, 71, 0.95); }
+      70% { box-shadow: 0 0 0 14px rgba(253, 224, 71, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(253, 224, 71, 0); }
+    }
+
+    .token-event-active {
+      z-index: 30 !important;
+      animation: tokenDramaticBounce 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .token-event-active .avatar-ring {
+      border-color: #fde047 !important;
+      animation: actionRingPulse 0.95s infinite;
+    }
+
+    @keyframes mapCameraShake {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      15% { transform: translate(-5px, -3px) rotate(-0.7deg); }
+      30% { transform: translate(5px, 3px) rotate(0.7deg); }
+      45% { transform: translate(-4px, 2px) rotate(-0.5deg); }
+      60% { transform: translate(4px, -2px) rotate(0.5deg); }
+      75% { transform: translate(-2px, 1px) rotate(-0.2deg); }
+    }
+
+    .map-shake-heavy {
+      animation: mapCameraShake 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    @keyframes clashShockwave {
+      0% {
+        transform: translate(-50%, -50%) scale(0.35);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(2.6);
+        opacity: 0;
+      }
+    }
+
+    .clash-ring-win {
+      border: 3px solid #34d399;
+      background: radial-gradient(circle, rgba(52, 211, 153, 0.45) 0%, transparent 70%);
+      animation: clashShockwave 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .clash-ring-loss {
+      border: 3px solid #fb7185;
+      background: radial-gradient(circle, rgba(251, 113, 133, 0.45) 0%, transparent 70%);
+      animation: clashShockwave 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes floatingCalloutPop {
+      0% { opacity: 0; transform: translate(-50%, -20%) scale(0.5); }
+      20% { opacity: 1; transform: translate(-50%, -75%) scale(1.12); }
+      35% { transform: translate(-50%, -62%) scale(1); }
+      85% { opacity: 1; transform: translate(-50%, -70%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -95%) scale(0.95); }
+    }
+
+    .map-callout-badge {
+      animation: floatingCalloutPop 2.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .btn-next-match {
+      background: linear-gradient(180deg, #fef08a 0%, #f5c451 50%, #d99126 100%);
+      border: 1.5px solid #fffbeb;
+      color: #271704;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 22px rgba(245, 196, 81, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.85);
+      letter-spacing: 0.16em;
+      transition: all 0.18s ease;
+    }
+
+    .btn-next-match:hover {
+      background: linear-gradient(180deg, #fef9c3 0%, #fcd34d 50%, #e5a030 100%);
+      box-shadow: 0 6px 28px rgba(253, 224, 71, 0.7), inset 0 1px 3px rgba(255, 255, 255, 0.95);
+      transform: translateY(-1px);
+    }
+
+    .btn-next-match:active {
+      transform: scale(0.985);
+    }
+
+    /* Custom Scrollbar for Modals */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #0c1938; }
+    ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <!-- Main Game Frame -->
+  <div class="hex-frame" id="appFrame">
+    <!-- Dynamic Top Header -->
+    <div class="hex-header">
+      <div class="flex items-center justify-between mb-1">
+        <button onclick="openRosterModal()" class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded border border-[#f5c451]/60 bg-[#173370] text-[#fef08a] hover:border-white transition">
+          Cards & Stats
+        </button>
+        <span id="headerSub" class="text-[11px] font-extrabold tracking-[0.22em] text-[#7dd3fc] uppercase">
+          ROUND 1 / 5
+        </span>
+        <button onclick="resetGame()" class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded border border-sky-400/35 bg-[#122759] text-sky-200 hover:text-white transition">
+          Reset
+        </button>
+      </div>
+      <h1 id="headerTitle" class="font-display text-xl sm:text-2xl font-bold text-[#fffbeb] tracking-wider uppercase drop-shadow">
+        SELECT A TEAM
+      </h1>
+    </div>
+
+    <!-- Main Dynamic Content Area -->
+    <div id="mainWorkspace">
+      <div id="stageContainer" class="p-3.5 sm:p-4 flex flex-col gap-3.5">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Land of Dawn Map Section (MLBB Tactical Minimap Style matching plannerNew1.png) -->
+      <div id="mapWrapper" class="px-3.5 pb-4">
+        <div id="mapArenaBox" class="relative w-full aspect-square rounded-xl overflow-hidden border-2 border-[#f5c451]/65 bg-[#2a474b] shadow-lg">
+        <svg id="landOfDawnSvg" viewBox="0 0 400 400" class="w-full h-full block">
+          <!-- Jungle Floor Base -->
+          <rect x="0" y="0" width="400" height="400" fill="#2a474b" />
+
+          <!-- Outer Lanes (Slate Gray Pathways) -->
+          <!-- Top / EXP Lane -->
+          <path d="M 32 310 L 32 52 Q 32 32 52 32 L 310 32" fill="none" stroke="#475c63" stroke-width="46" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Bottom / Gold Lane -->
+          <path d="M 90 368 L 348 368 Q 368 368 368 348 L 368 90" fill="none" stroke="#475c63" stroke-width="46" stroke-linecap="round" stroke-linejoin="round" />
+          <!-- Mid Lane (Diagonal Bottom-Left to Top-Right) -->
+          <path d="M 65 335 L 335 65" fill="none" stroke="#475c63" stroke-width="34" stroke-linecap="round" />
+
+          <!-- Blue Base Corner (Bottom-Left) -->
+          <path d="M 0 266 Q 112 278 134 400 L 0 400 Z" fill="#034c6e" />
+          <!-- Red Base Corner (Top-Right) -->
+          <path d="M 400 134 Q 288 122 266 0 L 400 0 Z" fill="#5e2429" />
+
+          <!-- Diagonal River & Lord / Turtle Circular Pits -->
+          <path d="M 105 112 L 295 288" stroke="#046a7d" stroke-width="50" stroke-linecap="round" />
+          <!-- Lord Pit Circle (Upper-Left) -->
+          <circle cx="122" cy="122" r="40" fill="#046a7d" />
+          <path d="M 110 105 A 20 20 0 1 1 105 132" fill="none" stroke="#08242b" stroke-width="9" stroke-linecap="round" />
+          <!-- Turtle Pit Circle (Lower-Right) -->
+          <circle cx="278" cy="278" r="40" fill="#046a7d" />
+          <path d="M 290 295 A 20 20 0 1 1 295 268" fill="none" stroke="#08242b" stroke-width="9" stroke-linecap="round" />
+
+          <!-- Mid River Bridge -->
+          <path d="M 176 224 L 224 176" stroke="#475c63" stroke-width="32" stroke-linecap="butt" />
+
+          <!-- Dark Jungle Terrain Obstacles & Walls -->
+          <g fill="#08242b">
+            <!-- Base Wall Arcs -->
+            <path d="M 38 274 Q 68 282 82 304 L 74 310 Q 60 290 34 282 Z" />
+            <path d="M 362 126 Q 332 118 318 96 L 326 90 Q 340 110 366 118 Z" />
+            <!-- Upper Jungle Rocks -->
+            <path d="M 78 65 Q 105 48 135 56 L 128 74 Q 102 68 85 80 Z" />
+            <path d="M 145 78 Q 168 72 178 92 L 156 100 Z" />
+            <path d="M 205 95 Q 230 85 245 112 L 220 120 Z" />
+            <path d="M 192 142 Q 214 134 226 152 L 204 160 Z" />
+            <!-- Left Jungle Rocks -->
+            <path d="M 55 115 Q 72 100 84 122 L 66 142 Z" />
+            <path d="M 48 165 Q 68 158 76 184 L 52 195 Z" />
+            <path d="M 85 182 Q 112 172 120 198 L 94 214 Z" />
+            <path d="M 78 228 Q 98 222 106 244 L 86 250 Z" />
+            <!-- Lower Jungle Rocks -->
+            <path d="M 322 335 Q 295 352 265 344 L 272 326 Q 298 332 315 320 Z" />
+            <path d="M 255 322 Q 232 328 222 308 L 244 300 Z" />
+            <path d="M 195 305 Q 170 315 155 288 L 180 280 Z" />
+            <path d="M 208 258 Q 186 266 174 248 L 196 240 Z" />
+            <!-- Right Jungle Rocks -->
+            <path d="M 345 285 Q 328 300 316 278 L 334 258 Z" />
+            <path d="M 352 235 Q 332 242 324 216 L 348 205 Z" />
+            <path d="M 315 218 Q 288 228 280 202 L 306 186 Z" />
+            <path d="M 322 172 Q 302 178 294 156 L 314 150 Z" />
+          </g>
+
+          <!-- Bushes (Deep Emerald Green) -->
+          <g fill="#064e3b">
+            <rect x="142" y="12" width="28" height="11" rx="5" />
+            <rect x="230" y="377" width="28" height="11" rx="5" />
+            <rect x="4" y="138" width="12" height="24" rx="5" />
+            <rect x="384" y="238" width="12" height="24" rx="5" />
+            <path d="M 16 74 L 74 16 L 82 24 L 24 82 Z" />
+            <path d="M 384 326 L 326 384 L 318 376 L 376 318 Z" />
+            <rect x="150" y="176" width="24" height="10" rx="4" transform="rotate(45 162 181)" />
+            <rect x="226" y="214" width="24" height="10" rx="4" transform="rotate(45 238 219)" />
+          </g>
+
+          <!-- Jungle Creeps & Buff Icons -->
+          <!-- Purple Buffs -->
+          <circle cx="105" cy="192" r="9" fill="#581c87" stroke="#08242b" stroke-width="2" />
+          <circle cx="295" cy="208" r="9" fill="#581c87" stroke="#08242b" stroke-width="2" />
+          <!-- Orange Buffs -->
+          <circle cx="212" cy="90" r="8.5" fill="#ea580c" stroke="#08242b" stroke-width="2" />
+          <circle cx="188" cy="310" r="8.5" fill="#ea580c" stroke="#08242b" stroke-width="2" />
+          <!-- Gold Crab / Rick -->
+          <circle cx="75" cy="108" r="7.5" fill="#eab308" stroke="#08242b" stroke-width="2" />
+          <circle cx="325" cy="292" r="7.5" fill="#eab308" stroke="#08242b" stroke-width="2" />
+          <!-- Lithowanderer (Cyan River Orb) -->
+          <circle cx="156" cy="156" r="7.5" fill="#06b6d4" stroke="#08242b" stroke-width="2" />
+          <!-- Green Jungle Camps -->
+          <g fill="#22c55e" stroke="#08242b" stroke-width="1.8">
+            <circle cx="152" cy="72" r="6.5" />
+            <circle cx="198" cy="112" r="6.5" />
+            <circle cx="66" cy="172" r="6.5" />
+            <circle cx="248" cy="328" r="6.5" />
+            <circle cx="202" cy="288" r="6.5" />
+            <circle cx="334" cy="228" r="6.5" />
+          </g>
+          <!-- Vision Wards / Cyclone Eyes (Cyan Diamonds) -->
+          <g fill="#22d3ee" stroke="#08242b" stroke-width="1.5">
+            <polygon points="175,78 182,85 175,92 168,85" />
+            <polygon points="88,175 95,182 88,189 81,182" />
+            <polygon points="225,308 232,315 225,322 218,315" />
+            <polygon points="312,211 319,218 312,225 305,218" />
+          </g>
+
+          <!-- MLBB Turret & Crystal Icons (matching plannerNew1.png) -->
+          <!-- Blue Side Crystal & Turrets (Cyan #00d8ff) -->
+          <g fill="#00d8ff">
+            <!-- Blue Crystal -->
+            <path d="M 40 328 L 48 345 L 40 362 L 32 345 Z" />
+            <circle cx="25" cy="355" r="5" />
+            <circle cx="55" cy="355" r="5" />
+            <path d="M 20 362 Q 40 374 60 362 L 54 368 Q 40 378 26 368 Z" />
+            <!-- Blue Inhibitor Turrets -->
+            <path d="M 20 278 L 26 290 L 20 296 L 14 290 Z M 11 294 L 29 294 L 25 303 L 15 303 Z" />
+            <path d="M 80 308 L 86 320 L 80 326 L 74 320 Z M 71 324 L 89 324 L 85 333 L 75 333 Z" />
+            <path d="M 106 364 L 112 376 L 106 382 L 100 376 Z M 97 380 L 115 380 L 111 389 L 101 389 Z" />
+            <!-- Blue Inner Turrets -->
+            <path d="M 18 182 L 24 194 L 18 200 L 12 194 Z M 9 198 L 27 198 L 23 207 L 13 207 Z" />
+            <path d="M 114 264 L 120 276 L 114 282 L 108 276 Z M 105 280 L 123 280 L 119 289 L 109 289 Z" />
+            <path d="M 184 368 L 190 380 L 184 386 L 178 380 Z M 175 384 L 193 384 L 189 393 L 179 393 Z" />
+            <!-- Blue Bottom Outer Turret -->
+            <path d="M 294 366 L 300 378 L 294 384 L 288 378 Z M 285 382 L 303 382 L 299 391 L 289 391 Z" />
+          </g>
+
+          <!-- Neutral / Contested Outer Turrets (Gold #e5c158) -->
+          <g fill="#e5c158">
+            <path d="M 106 8 L 112 20 L 106 26 L 100 20 Z M 97 24 L 115 24 L 111 33 L 101 33 Z" />
+            <path d="M 16 98 L 22 110 L 16 116 L 10 110 Z M 7 114 L 25 114 L 21 123 L 11 123 Z" />
+            <path d="M 156 222 L 162 234 L 156 240 L 150 234 Z M 147 238 L 165 238 L 161 247 L 151 247 Z" />
+            <path d="M 244 152 L 250 164 L 244 170 L 238 164 Z M 235 168 L 253 168 L 249 177 L 239 177 Z" />
+            <path d="M 384 276 L 390 288 L 384 294 L 378 288 Z M 375 292 L 393 292 L 389 301 L 379 301 Z" />
+          </g>
+
+          <!-- Red Side Crystal & Turrets (Crimson #ff3b4e) -->
+          <g fill="#ff3b4e">
+            <!-- Red Crystal -->
+            <path d="M 360 32 L 368 49 L 360 66 L 352 49 Z" />
+            <circle cx="345" cy="59" r="5" />
+            <circle cx="375" cy="59" r="5" />
+            <path d="M 340 66 Q 360 78 380 66 L 374 72 Q 360 82 346 72 Z" />
+            <!-- Red Inhibitor Turrets -->
+            <path d="M 294 10 L 300 22 L 294 28 L 288 22 Z M 285 26 L 303 26 L 299 35 L 289 35 Z" />
+            <path d="M 320 66 L 326 78 L 320 84 L 314 78 Z M 311 82 L 329 82 L 325 91 L 315 91 Z" />
+            <path d="M 380 96 L 386 108 L 380 114 L 374 108 Z M 371 112 L 389 112 L 385 121 L 375 121 Z" />
+            <!-- Red Inner Turrets -->
+            <path d="M 216 6 L 222 18 L 216 24 L 210 18 Z M 207 22 L 225 22 L 221 31 L 211 31 Z" />
+            <path d="M 286 112 L 292 124 L 286 130 L 280 124 Z M 277 128 L 295 128 L 291 137 L 281 137 Z" />
+            <path d="M 382 192 L 388 204 L 382 210 L 376 204 Z M 373 208 L 391 208 L 387 217 L 377 217 Z" />
+          </g>
+
+          <!-- Subtle Lane Labels -->
+          <text x="48" y="20" fill="#cbd5e1" font-size="8.5" font-weight="800" opacity="0.8">EXP LANE</text>
+          <text x="352" y="392" text-anchor="end" fill="#cbd5e1" font-size="8.5" font-weight="800" opacity="0.8">GOLD LANE</text>
+        </svg>
+
+        <!-- HTML Overlay Layer for Role Slots & Player Tokens -->
+        <div id="mapTokensLayer" class="absolute inset-0 pointer-events-none">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+
+      <!-- Bottom Quick Synergy / Team Power Bar -->
+      <div id="synergyBar" class="mt-2.5 flex items-center justify-between text-xs bg-[#10224d] border border-[#38bdf8]/40 rounded-lg px-3 py-2">
+        <div class="flex items-center gap-2">
+          <span class="text-sky-200 uppercase tracking-wider text-[10px] font-bold">Team Power</span>
+          <span id="teamOvrDisplay" class="font-extrabold text-[#fef08a] text-sm">--</span>
+        </div>
+        <div id="synergyBadges" class="flex items-center gap-1.5 flex-wrap justify-end">
+          <span class="text-[10px] text-sky-300/80">Draft 5 roles to activate synergies</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Player Cards & Stats Modal -->
+  <div id="rosterModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3">
+    <div class="hex-frame !max-w-lg max-h-[88vh] flex flex-col">
+      <div class="hex-header flex items-center justify-between">
+        <span class="text-xs font-bold tracking-widest text-[#fef08a] uppercase">M-Series Player Cards</span>
+        <button onclick="closeRosterModal()" class="text-xs px-2.5 py-1 rounded bg-[#173370] text-sky-100 hover:text-white border border-sky-400/50">
+          Close ✕
+        </button>
+      </div>
+      <div id="rosterModalBody" class="p-3.5 overflow-y-auto space-y-3">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. COMPLETE M-SERIES TEAMS & ERA-SPECIFIC PLAYER DATABASE (M1 - M7)
+    // =========================================================================
+    // Includes starting 5 + 6th-man subs for every M1-M7 squad from the official dataset.
+    const M_SERIES_TEAMS = [
+      // -------------------- M1 WORLD CHAMPIONSHIP (2019) --------------------
+      {
+        id: "evos-m1", name: "EVOS LEGENDS", short: "EVOS", edition: "M1", year: "2019", region: "ID",
+        primary: "#2563eb", secondary: "#0f172a", accent: "#93c5fd",
+        players: [
+          { name: "Oura", pos: "EXP", ovr: 95, mic: 95, mac: 92, dpm: 3980, gpm: 695, kp: 71, srv: 91, hair: "#1e1b18", glasses: false, skin: "#eab696" },
+          { name: "Wannn", pos: "JGL", ovr: 94, mic: 96, mac: 89, dpm: 4520, gpm: 795, kp: 75, srv: 88, hair: "#2b211a", glasses: false, skin: "#e0a986" },
+          { name: "Luminaire", pos: "MID", ovr: 93, mic: 89, mac: 95, dpm: 4690, gpm: 665, kp: 81, srv: 90, hair: "#171717", glasses: true, skin: "#f1c2a3" },
+          { name: "Rekt", pos: "GOLD", ovr: 94, mic: 90, mac: 96, dpm: 4120, gpm: 740, kp: 76, srv: 92, hair: "#1f1a17", glasses: false, skin: "#e7b290" },
+          { name: "Donkey", pos: "ROAM", ovr: 92, mic: 87, mac: 93, dpm: 1890, gpm: 495, kp: 82, srv: 86, hair: "#121212", glasses: false, skin: "#d99b76" },
+          { name: "Rexxy", pos: "MID", isSub: true, ovr: 80, mic: 81, mac: 80, dpm: 3450, gpm: 610, kp: 68, srv: 79, hair: "#18181b", glasses: false, skin: "#e5af8c" }
+        ]
+      },
+      {
+        id: "rrq-m1", name: "RRQ HOSHI", short: "RRQ", edition: "M1", year: "2019", region: "ID",
+        primary: "#f59e0b", secondary: "#18181b", accent: "#fef08a",
+        players: [
+          { name: "R7", pos: "EXP", ovr: 89, mic: 89, mac: 89, dpm: 3490, gpm: 640, kp: 70, srv: 88, hair: "#18181b", glasses: false, skin: "#e2aa87" },
+          { name: "XINNN", pos: "JGL", ovr: 90, mic: 93, mac: 85, dpm: 4680, gpm: 790, kp: 71, srv: 83, hair: "#27201c", glasses: false, skin: "#dca17c" },
+          { name: "Lemon", pos: "MID", ovr: 91, mic: 92, mac: 91, dpm: 4740, gpm: 675, kp: 75, srv: 90, hair: "#141414", glasses: false, skin: "#ecc0a1" },
+          { name: "Tuturuu", pos: "GOLD", ovr: 90, mic: 91, mac: 89, dpm: 4910, gpm: 785, kp: 70, srv: 88, hair: "#221c18", glasses: true, skin: "#e8b695" },
+          { name: "Vynnn", pos: "ROAM", ovr: 89, mic: 85, mac: 92, dpm: 1660, gpm: 480, kp: 80, srv: 86, hair: "#1c1917", glasses: true, skin: "#f0c3a5" },
+          { name: "Liam", pos: "ROAM", isSub: true, ovr: 87, mic: 83, mac: 89, dpm: 1620, gpm: 470, kp: 77, srv: 85, hair: "#171717", glasses: false, skin: "#e2aa87" },
+          { name: "AyamJAGO", pos: "JGL", isSub: true, ovr: 87, mic: 88, mac: 85, dpm: 3790, gpm: 735, kp: 71, srv: 84, hair: "#262626", glasses: false, skin: "#dfa582" }
+        ]
+      },
+      {
+        id: "todak-m1", name: "TODAK", short: "TDK", edition: "M1", year: "2019", region: "MY",
+        primary: "#0284c7", secondary: "#0f172a", accent: "#bae6fd",
+        players: [
+          { name: "Eone", pos: "EXP", ovr: 84, mic: 83, mac: 85, dpm: 3120, gpm: 615, kp: 66, srv: 83, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Ly4ly4ly4", pos: "JGL", ovr: 85, mic: 86, mac: 84, dpm: 4390, gpm: 740, kp: 67, srv: 83, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "Moon", pos: "MID", ovr: 88, mic: 87, mac: 89, dpm: 4580, gpm: 655, kp: 76, srv: 87, hair: "#18181b", glasses: true, skin: "#ecc0a1" },
+          { name: "Ciku", pos: "GOLD", ovr: 88, mic: 90, mac: 86, dpm: 4760, gpm: 775, kp: 70, srv: 85, hair: "#262626", glasses: false, skin: "#e3ad8a" },
+          { name: "Xorn", pos: "ROAM", ovr: 87, mic: 88, mac: 87, dpm: 1750, gpm: 480, kp: 78, srv: 83, hair: "#171717", glasses: false, skin: "#d99b76" },
+          { name: "Nenass", pos: "EXP", isSub: true, ovr: 76, mic: 77, mac: 75, dpm: 3210, gpm: 610, kp: 62, srv: 75, hair: "#1c1917", glasses: false, skin: "#e2ab88" }
+        ]
+      },
+      {
+        id: "bg-m1", name: "BURMESE GHOULS", short: "BG", edition: "M1", year: "2019", region: "MM",
+        primary: "#dc2626", secondary: "#1f2937", accent: "#fecaca",
+        players: [
+          { name: "Ruby DD", pos: "EXP", ovr: 87, mic: 86, mac: 88, dpm: 3410, gpm: 635, kp: 69, srv: 86, hair: "#1c1917", glasses: false, skin: "#e3ad8a" },
+          { name: "Kid", pos: "JGL", ovr: 87, mic: 88, mac: 86, dpm: 3920, gpm: 740, kp: 72, srv: 84, hair: "#262626", glasses: false, skin: "#e7b492" },
+          { name: "Maybe", pos: "MID", ovr: 86, mic: 85, mac: 87, dpm: 4450, gpm: 640, kp: 75, srv: 84, hair: "#171717", glasses: true, skin: "#ecc0a1" },
+          { name: "ACE", pos: "GOLD", ovr: 88, mic: 89, mac: 87, dpm: 4740, gpm: 770, kp: 70, srv: 85, hair: "#1f1a17", glasses: false, skin: "#e2aa87" },
+          { name: "PVNDV", pos: "ROAM", ovr: 84, mic: 82, mac: 86, dpm: 1540, gpm: 460, kp: 75, srv: 82, hair: "#18181b", glasses: false, skin: "#d99b76" },
+          { name: "ICE ICE", pos: "EXP", isSub: true, ovr: 77, mic: 78, mac: 76, dpm: 2980, gpm: 590, kp: 63, srv: 76, hair: "#171717", glasses: false, skin: "#e5af8c" }
+        ]
+      },
+      {
+        id: "sunsparks-m1", name: "SUNSPARKS", short: "SUN", edition: "M1", year: "2019", region: "PH",
+        primary: "#f97316", secondary: "#1e1b4b", accent: "#fed7aa",
+        players: [
+          { name: "Renzio", pos: "EXP", ovr: 84, mic: 84, mac: 84, dpm: 3180, gpm: 615, kp: 65, srv: 82, hair: "#171717", glasses: false, skin: "#e2ab88" },
+          { name: "Kielvj", pos: "JGL", ovr: 86, mic: 88, mac: 84, dpm: 3890, gpm: 740, kp: 70, srv: 83, hair: "#1c1917", glasses: false, skin: "#e8b695" },
+          { name: "Greed (Baloyskie)", pos: "MID", ovr: 84, mic: 83, mac: 85, dpm: 4260, gpm: 630, kp: 74, srv: 82, hair: "#1c1917", glasses: true, skin: "#dfa582" },
+          { name: "Jaypee", pos: "GOLD", ovr: 83, mic: 84, mac: 82, dpm: 4310, gpm: 730, kp: 66, srv: 81, hair: "#262626", glasses: false, skin: "#e2ab88" },
+          { name: "Rafflesia", pos: "ROAM", ovr: 85, mic: 83, mac: 87, dpm: 1590, gpm: 465, kp: 76, srv: 83, hair: "#171717", glasses: false, skin: "#e5af8c" }
+        ]
+      },
+      {
+        id: "onicph-m1", name: "ONIC PHILIPPINES", short: "ONIC", edition: "M1", year: "2019", region: "PH",
+        primary: "#facc15", secondary: "#171717", accent: "#fef08a",
+        players: [
+          { name: "Dlar", pos: "EXP", ovr: 79, mic: 79, mac: 79, dpm: 2860, gpm: 580, kp: 62, srv: 78, hair: "#1f1a17", glasses: false, skin: "#e4ae8b" },
+          { name: "Wise", pos: "JGL", ovr: 80, mic: 80, mac: 80, dpm: 3480, gpm: 690, kp: 66, srv: 78, hair: "#292524", glasses: false, skin: "#e6b290" },
+          { name: "Greed", pos: "MID", ovr: 79, mic: 79, mac: 79, dpm: 3890, gpm: 595, kp: 68, srv: 77, hair: "#18181b", glasses: false, skin: "#e2ab88" },
+          { name: "ly4knu", pos: "GOLD", ovr: 81, mic: 82, mac: 80, dpm: 4140, gpm: 710, kp: 64, srv: 79, hair: "#171717", glasses: false, skin: "#e5af8c" },
+          { name: "OhMyV33NUS", pos: "ROAM", ovr: 80, mic: 78, mac: 83, dpm: 1450, gpm: 450, kp: 74, srv: 78, hair: "#2b211a", glasses: true, skin: "#ecc0a1" }
+        ]
+      },
+      {
+        id: "evossg-m1", name: "EVOS SG", short: "EVSG", edition: "M1", year: "2019", region: "SG",
+        primary: "#1d4ed8", secondary: "#0f172a", accent: "#bfdbfe",
+        players: [
+          { name: "Soul", pos: "EXP", ovr: 82, mic: 82, mac: 82, dpm: 3020, gpm: 600, kp: 64, srv: 80, hair: "#171717", glasses: false, skin: "#ecc0a1" },
+          { name: "Potato", pos: "JGL", ovr: 82, mic: 84, mac: 80, dpm: 3610, gpm: 700, kp: 68, srv: 79, hair: "#18181b", glasses: false, skin: "#e8b695" },
+          { name: "Oh Deer Bambi", pos: "MID", ovr: 81, mic: 81, mac: 81, dpm: 4020, gpm: 605, kp: 70, srv: 79, hair: "#262626", glasses: true, skin: "#ecc0a1" },
+          { name: "Pokemon", pos: "GOLD", ovr: 82, mic: 83, mac: 81, dpm: 4210, gpm: 715, kp: 64, srv: 80, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "JPL", pos: "ROAM", ovr: 82, mic: 80, mac: 84, dpm: 1480, gpm: 455, kp: 74, srv: 80, hair: "#171717", glasses: false, skin: "#e2ab88" }
+        ]
+      },
+      {
+        id: "10s-m1", name: "10S GAMING PLUS", short: "10S", edition: "M1", year: "2019", region: "JP",
+        primary: "#ef4444", secondary: "#ffffff", accent: "#fecaca",
+        players: [
+          { name: "Tomebo", pos: "EXP", ovr: 82, mic: 82, mac: 82, dpm: 2990, gpm: 595, kp: 63, srv: 81, hair: "#171717", glasses: false, skin: "#f1ccb2" },
+          { name: "Obuyan", pos: "JGL", ovr: 84, mic: 86, mac: 82, dpm: 3720, gpm: 720, kp: 69, srv: 81, hair: "#18181b", glasses: false, skin: "#f4d2ba" },
+          { name: "totaka", pos: "MID", ovr: 82, mic: 81, mac: 83, dpm: 4110, gpm: 615, kp: 71, srv: 80, hair: "#262626", glasses: true, skin: "#f1ccb2" },
+          { name: "Kani", pos: "GOLD", ovr: 83, mic: 85, mac: 81, dpm: 4280, gpm: 725, kp: 65, srv: 81, hair: "#1c1917", glasses: false, skin: "#ecc0a1" },
+          { name: "Pappa", pos: "ROAM", ovr: 82, mic: 80, mac: 84, dpm: 1460, gpm: 450, kp: 73, srv: 80, hair: "#171717", glasses: false, skin: "#e8b695" }
+        ]
+      },
+
+      // -------------------- M2 WORLD CHAMPIONSHIP (2021) --------------------
+      {
+        id: "bren-m2", name: "BREN ESPORTS", short: "BREN", edition: "M2", year: "2021", region: "PH",
+        primary: "#eab308", secondary: "#111827", accent: "#fef9c3",
+        players: [
+          { name: "FlapTzy", pos: "EXP", ovr: 93, mic: 93, mac: 93, dpm: 3840, gpm: 675, kp: 72, srv: 91, hair: "#171717", glasses: false, skin: "#dda27e" },
+          { name: "KarlTzy", pos: "JGL", ovr: 96, mic: 97, mac: 93, dpm: 4620, gpm: 810, kp: 75, srv: 90, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "Pheww", pos: "MID", ovr: 94, mic: 91, mac: 97, dpm: 4890, gpm: 680, kp: 82, srv: 92, hair: "#18181b", glasses: true, skin: "#e2ab88" },
+          { name: "Ribo", pos: "GOLD", ovr: 92, mic: 91, mac: 93, dpm: 4620, gpm: 765, kp: 74, srv: 90, hair: "#292524", glasses: false, skin: "#d89c78" },
+          { name: "Lusty", pos: "ROAM", ovr: 91, mic: 88, mac: 93, dpm: 1790, gpm: 490, kp: 81, srv: 88, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Ejhay", pos: "JGL", isSub: true, ovr: 79, mic: 80, mac: 78, dpm: 3380, gpm: 615, kp: 66, srv: 78, hair: "#1c1917", glasses: false, skin: "#e5af8c" }
+        ]
+      },
+      {
+        id: "bg-m2", name: "BURMESE GHOULS", short: "BG", edition: "M2", year: "2021", region: "MM",
+        primary: "#dc2626", secondary: "#1f2937", accent: "#fecaca",
+        players: [
+          { name: "Ruby DD", pos: "EXP", ovr: 89, mic: 88, mac: 90, dpm: 3540, gpm: 645, kp: 70, srv: 88, hair: "#1c1917", glasses: false, skin: "#e3ad8a" },
+          { name: "Kid", pos: "JGL", ovr: 89, mic: 90, mac: 88, dpm: 4050, gpm: 755, kp: 74, srv: 86, hair: "#262626", glasses: false, skin: "#e7b492" },
+          { name: "Maybe", pos: "MID", ovr: 88, mic: 87, mac: 89, dpm: 4610, gpm: 650, kp: 77, srv: 86, hair: "#171717", glasses: true, skin: "#ecc0a1" },
+          { name: "ACE", pos: "GOLD", ovr: 90, mic: 91, mac: 88, dpm: 4980, gpm: 795, kp: 72, srv: 87, hair: "#1f1a17", glasses: false, skin: "#e2aa87" },
+          { name: "Dee", pos: "ROAM", ovr: 88, mic: 86, mac: 90, dpm: 1660, gpm: 480, kp: 79, srv: 86, hair: "#18181b", glasses: false, skin: "#d99b76" },
+          { name: "Meow", pos: "EXP", isSub: true, ovr: 78, mic: 78, mac: 78, dpm: 2890, gpm: 580, kp: 62, srv: 77, hair: "#171717", glasses: false, skin: "#e5af8c" }
+        ]
+      },
+      {
+        id: "rrq-m2", name: "RRQ HOSHI", short: "RRQ", edition: "M2", year: "2021", region: "ID",
+        primary: "#f59e0b", secondary: "#111827", accent: "#fef3c7",
+        players: [
+          { name: "R7", pos: "EXP", ovr: 90, mic: 89, mac: 91, dpm: 3580, gpm: 650, kp: 71, srv: 89, hair: "#18181b", glasses: false, skin: "#e2aa87" },
+          { name: "Alberttt", pos: "JGL", ovr: 91, mic: 94, mac: 88, dpm: 4320, gpm: 785, kp: 73, srv: 88, hair: "#171717", glasses: true, skin: "#edc2a4" },
+          { name: "Lemon", pos: "MID", ovr: 89, mic: 90, mac: 89, dpm: 4620, gpm: 660, kp: 74, srv: 88, hair: "#141414", glasses: false, skin: "#ecc0a1" },
+          { name: "Xinnn", pos: "GOLD", ovr: 87, mic: 89, mac: 85, dpm: 4590, gpm: 765, kp: 69, srv: 83, hair: "#27201c", glasses: false, skin: "#dca17c" },
+          { name: "Vynnn", pos: "ROAM", ovr: 88, mic: 85, mac: 91, dpm: 1640, gpm: 480, kp: 79, srv: 86, hair: "#1c1917", glasses: true, skin: "#f0c3a5" },
+          { name: "Wizzking", pos: "GOLD", isSub: true, ovr: 86, mic: 86, mac: 86, dpm: 4350, gpm: 745, kp: 68, srv: 85, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "Psychoo", pos: "ROAM", isSub: true, ovr: 84, mic: 83, mac: 85, dpm: 1560, gpm: 465, kp: 74, srv: 82, hair: "#171717", glasses: false, skin: "#dfa582" }
+        ]
+      },
+      {
+        id: "ae-m2", name: "ALTER EGO", short: "AE", edition: "M2", year: "2021", region: "ID",
+        primary: "#e11d48", secondary: "#111827", accent: "#ffe4e6",
+        players: [
+          { name: "Pai", pos: "EXP", ovr: 87, mic: 87, mac: 87, dpm: 3390, gpm: 630, kp: 68, srv: 85, hair: "#171717", glasses: false, skin: "#e2ab88" },
+          { name: "Celiboy", pos: "JGL", ovr: 88, mic: 90, mac: 86, dpm: 4120, gpm: 765, kp: 73, srv: 84, hair: "#18181b", glasses: false, skin: "#ecc0a1" },
+          { name: "Udil", pos: "MID", ovr: 89, mic: 88, mac: 90, dpm: 4710, gpm: 660, kp: 78, srv: 87, hair: "#262626", glasses: true, skin: "#e8b695" },
+          { name: "Ahmad", pos: "GOLD", ovr: 88, mic: 89, mac: 87, dpm: 4790, gpm: 770, kp: 70, srv: 85, hair: "#1c1917", glasses: false, skin: "#dfa582" },
+          { name: "LeoMurphy", pos: "ROAM", ovr: 87, mic: 86, mac: 88, dpm: 1640, gpm: 475, kp: 78, srv: 83, hair: "#171717", glasses: false, skin: "#d99b76" },
+          { name: "Yam", pos: "EXP", isSub: true, ovr: 78, mic: 79, mac: 77, dpm: 3190, gpm: 600, kp: 64, srv: 77, hair: "#18181b", glasses: false, skin: "#e5af8c" }
+        ]
+      },
+      {
+        id: "omega-m2", name: "OMEGA ESPORTS", short: "OMG", edition: "M2", year: "2021", region: "PH",
+        primary: "#2563eb", secondary: "#0f172a", accent: "#93c5fd",
+        players: [
+          { name: "Kenji", pos: "EXP", ovr: 84, mic: 84, mac: 84, dpm: 3150, gpm: 615, kp: 66, srv: 82, hair: "#171717", glasses: false, skin: "#e2ab88" },
+          { name: "Hadjizy", pos: "JGL", ovr: 86, mic: 88, mac: 84, dpm: 3940, gpm: 745, kp: 71, srv: 83, hair: "#18181b", glasses: false, skin: "#e2ab88" },
+          { name: "YellyHaze", pos: "MID", ovr: 84, mic: 83, mac: 85, dpm: 4240, gpm: 625, kp: 73, srv: 82, hair: "#262626", glasses: true, skin: "#ecc0a1" },
+          { name: "KurtTzy", pos: "GOLD", ovr: 83, mic: 84, mac: 82, dpm: 4290, gpm: 725, kp: 66, srv: 81, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "Heath", pos: "ROAM", ovr: 84, mic: 82, mac: 86, dpm: 1520, gpm: 460, kp: 75, srv: 82, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Toshi", pos: "GOLD", isSub: true, ovr: 78, mic: 79, mac: 77, dpm: 3410, gpm: 620, kp: 64, srv: 77, hair: "#18181b", glasses: false, skin: "#e2ab88" }
+        ]
+      },
+      {
+        id: "todak-m2", name: "TODAK", short: "TDK", edition: "M2", year: "2021", region: "MY",
+        primary: "#0284c7", secondary: "#0f172a", accent: "#bae6fd",
+        players: [
+          { name: "4Meyz", pos: "EXP", ovr: 84, mic: 84, mac: 84, dpm: 3160, gpm: 615, kp: 66, srv: 82, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Stoo", pos: "JGL", ovr: 83, mic: 84, mac: 82, dpm: 3680, gpm: 715, kp: 68, srv: 81, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "Moon", pos: "MID", ovr: 86, mic: 85, mac: 87, dpm: 4420, gpm: 640, kp: 75, srv: 85, hair: "#18181b", glasses: true, skin: "#ecc0a1" },
+          { name: "Ciku", pos: "GOLD", ovr: 86, mic: 88, mac: 84, dpm: 4610, gpm: 760, kp: 69, srv: 83, hair: "#262626", glasses: false, skin: "#e3ad8a" },
+          { name: "Xorn", pos: "ROAM", ovr: 85, mic: 86, mac: 84, dpm: 1680, gpm: 470, kp: 77, srv: 82, hair: "#171717", glasses: false, skin: "#d99b76" }
+        ]
+      },
+      {
+        id: "rsg-m2", name: "RSG SINGAPORE", short: "RSG", edition: "M2", year: "2021", region: "SG",
+        primary: "#0ea5e9", secondary: "#0f172a", accent: "#e0f2fe",
+        players: [
+          { name: "SynC", pos: "EXP", ovr: 81, mic: 81, mac: 81, dpm: 2960, gpm: 590, kp: 64, srv: 79, hair: "#171717", glasses: false, skin: "#ecc0a1" },
+          { name: "Jason", pos: "JGL", ovr: 82, mic: 83, mac: 81, dpm: 3590, gpm: 705, kp: 67, srv: 80, hair: "#18181b", glasses: false, skin: "#e8b695" },
+          { name: "Kayzeepi", pos: "MID", ovr: 83, mic: 82, mac: 84, dpm: 4190, gpm: 620, kp: 73, srv: 81, hair: "#262626", glasses: true, skin: "#ecc0a1" },
+          { name: "ly4ly4ly4", pos: "GOLD", ovr: 83, mic: 84, mac: 82, dpm: 4290, gpm: 725, kp: 66, srv: 81, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "Sana", pos: "ROAM", ovr: 82, mic: 81, mac: 83, dpm: 1490, gpm: 455, kp: 74, srv: 80, hair: "#171717", glasses: false, skin: "#e2ab88" }
+        ]
+      },
+      {
+        id: "devu-m2", name: "UNIQUE DEVU", short: "DEVU", edition: "M2", year: "2021", region: "EECA",
+        primary: "#ef4444", secondary: "#18181b", accent: "#fecaca",
+        players: [
+          { name: "Lil", pos: "EXP", ovr: 78, mic: 78, mac: 78, dpm: 2750, gpm: 565, kp: 60, srv: 77, hair: "#4a3728", glasses: false, skin: "#f4d2ba" },
+          { name: "ONESHOT", pos: "JGL", ovr: 78, mic: 79, mac: 77, dpm: 3360, gpm: 675, kp: 64, srv: 76, hair: "#3b2f2f", glasses: false, skin: "#f1ccb2" },
+          { name: "Sunset Lover", pos: "MID", ovr: 79, mic: 79, mac: 79, dpm: 3840, gpm: 590, kp: 68, srv: 77, hair: "#5c4033", glasses: true, skin: "#f5d5be" },
+          { name: "Defender", pos: "GOLD", ovr: 74, mic: 74, mac: 74, dpm: 3120, gpm: 640, kp: 60, srv: 73, hair: "#2b211a", glasses: false, skin: "#f2cbb0" },
+          { name: "SAWO", pos: "ROAM", ovr: 79, mic: 78, mac: 80, dpm: 1390, gpm: 440, kp: 70, srv: 77, hair: "#3f2e21", glasses: false, skin: "#efd0b8" }
+        ]
+      },
+
+      // -------------------- M3 WORLD CHAMPIONSHIP (2021) --------------------
+      {
+        id: "blck-m3", name: "BLACKLIST INTL", short: "BLCK", edition: "M3", year: "2021", region: "PH",
+        primary: "#e5e7eb", secondary: "#111827", accent: "#ffffff",
+        players: [
+          { name: "Edward", pos: "EXP", ovr: 93, mic: 92, mac: 94, dpm: 3720, gpm: 665, kp: 73, srv: 91, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Wise", pos: "JGL", ovr: 94, mic: 89, mac: 97, dpm: 3840, gpm: 770, kp: 79, srv: 92, hair: "#292524", glasses: false, skin: "#e6b290" },
+          { name: "Hadji", pos: "MID", ovr: 94, mic: 93, mac: 95, dpm: 4910, gpm: 685, kp: 82, srv: 92, hair: "#18181b", glasses: false, skin: "#e2ab88" },
+          { name: "Oheb", pos: "GOLD", ovr: 95, mic: 96, mac: 92, dpm: 5420, gpm: 835, kp: 72, srv: 91, hair: "#1c1917", glasses: false, skin: "#dba07c" },
+          { name: "OhMyV33NUS", pos: "ROAM", ovr: 95, mic: 86, mac: 99, dpm: 1720, gpm: 495, kp: 86, srv: 93, hair: "#2b211a", glasses: true, skin: "#ecc0a1" },
+          { name: "Dex Star", pos: "ROAM", isSub: true, ovr: 81, mic: 80, mac: 82, dpm: 1510, gpm: 460, kp: 73, srv: 80, hair: "#171717", glasses: false, skin: "#e5af8c" }
+        ]
+      },
+      {
+        id: "onicph-m3", name: "ONIC PH", short: "ONIC", edition: "M3", year: "2021", region: "PH",
+        primary: "#facc15", secondary: "#171717", accent: "#fef08a",
+        players: [
+          { name: "Dlar", pos: "EXP", ovr: 90, mic: 90, mac: 90, dpm: 3590, gpm: 650, kp: 71, srv: 88, hair: "#1f1a17", glasses: false, skin: "#e4ae8b" },
+          { name: "Kairi", pos: "JGL", ovr: 91, mic: 94, mac: 88, dpm: 4290, gpm: 790, kp: 73, srv: 88, hair: "#18181b", glasses: false, skin: "#edc2a4" },
+          { name: "Hatred", pos: "MID", ovr: 88, mic: 88, mac: 88, dpm: 4590, gpm: 655, kp: 76, srv: 86, hair: "#27272a", glasses: false, skin: "#e2ab88" },
+          { name: "Markyyyyy", pos: "GOLD", ovr: 90, mic: 91, mac: 89, dpm: 5020, gpm: 800, kp: 72, srv: 88, hair: "#171717", glasses: false, skin: "#e8b695" },
+          { name: "Baloyskie", pos: "ROAM", ovr: 91, mic: 88, mac: 94, dpm: 1860, gpm: 495, kp: 82, srv: 88, hair: "#1c1917", glasses: true, skin: "#dfa582" },
+          { name: "Beemo", pos: "ROAM", isSub: true, ovr: 78, mic: 77, mac: 79, dpm: 1410, gpm: 445, kp: 70, srv: 77, hair: "#171717", glasses: false, skin: "#e5af8c" }
+        ]
+      },
+      {
+        id: "btk-m3", name: "BTK", short: "BTK", edition: "M3", year: "2021", region: "NA",
+        primary: "#ef4444", secondary: "#0f172a", accent: "#fca5a5",
+        players: [
+          { name: "FwydChickn", pos: "EXP", ovr: 88, mic: 89, mac: 87, dpm: 3520, gpm: 645, kp: 70, srv: 86, hair: "#3f2e21", glasses: false, skin: "#f2cbb0" },
+          { name: "MobaZane", pos: "JGL", ovr: 89, mic: 90, mac: 88, dpm: 4180, gpm: 770, kp: 74, srv: 86, hair: "#292018", glasses: false, skin: "#efd0b8" },
+          { name: "ZIA", pos: "MID", ovr: 86, mic: 86, mac: 86, dpm: 4420, gpm: 640, kp: 75, srv: 84, hair: "#18181b", glasses: true, skin: "#e8b695" },
+          { name: "Victor", pos: "GOLD", ovr: 85, mic: 86, mac: 84, dpm: 4510, gpm: 750, kp: 68, srv: 83, hair: "#171717", glasses: false, skin: "#ecc0a1" },
+          { name: "Shark", pos: "ROAM", ovr: 87, mic: 86, mac: 88, dpm: 1660, gpm: 475, kp: 79, srv: 85, hair: "#221c18", glasses: false, skin: "#e5af8c" }
+        ]
+      },
+      {
+        id: "rrq-m3", name: "RRQ HOSHI", short: "RRQ", edition: "M3", year: "2021", region: "ID",
+        primary: "#f59e0b", secondary: "#111827", accent: "#fef3c7",
+        players: [
+          { name: "R7", pos: "EXP", ovr: 88, mic: 88, mac: 88, dpm: 3460, gpm: 640, kp: 70, srv: 87, hair: "#18181b", glasses: false, skin: "#e2aa87" },
+          { name: "Alberttt", pos: "JGL", ovr: 89, mic: 92, mac: 86, dpm: 4190, gpm: 770, kp: 72, srv: 86, hair: "#171717", glasses: true, skin: "#edc2a4" },
+          { name: "Clayyy", pos: "MID", ovr: 87, mic: 86, mac: 88, dpm: 4580, gpm: 650, kp: 76, srv: 85, hair: "#27201c", glasses: false, skin: "#e6b290" },
+          { name: "Skylar", pos: "GOLD", ovr: 87, mic: 89, mac: 85, dpm: 4840, gpm: 775, kp: 69, srv: 84, hair: "#1c1917", glasses: false, skin: "#dfa582" },
+          { name: "Vynnn", pos: "ROAM", ovr: 86, mic: 84, mac: 88, dpm: 1590, gpm: 470, kp: 78, srv: 84, hair: "#1c1917", glasses: true, skin: "#f0c3a5" },
+          { name: "Xinnn", pos: "GOLD", isSub: true, ovr: 85, mic: 87, mac: 83, dpm: 4460, gpm: 750, kp: 67, srv: 82, hair: "#27201c", glasses: false, skin: "#dca17c" }
+        ]
+      },
+      {
+        id: "onic-m3", name: "ONIC ESPORTS", short: "ONIC", edition: "M3", year: "2021", region: "ID",
+        primary: "#facc15", secondary: "#18181b", accent: "#ffffff",
+        players: [
+          { name: "Butss", pos: "EXP", ovr: 85, mic: 84, mac: 86, dpm: 3240, gpm: 620, kp: 67, srv: 84, hair: "#171717", glasses: false, skin: "#dca17c" },
+          { name: "Sanz", pos: "JGL", ovr: 86, mic: 88, mac: 84, dpm: 3940, gpm: 745, kp: 71, srv: 83, hair: "#292524", glasses: false, skin: "#e6b290" },
+          { name: "Drian", pos: "MID", ovr: 85, mic: 84, mac: 86, dpm: 4340, gpm: 635, kp: 74, srv: 83, hair: "#18181b", glasses: true, skin: "#ecc0a1" },
+          { name: "CW", pos: "GOLD", ovr: 85, mic: 86, mac: 84, dpm: 4510, gpm: 750, kp: 68, srv: 83, hair: "#1c1917", glasses: false, skin: "#ecc0a1" },
+          { name: "Kiboy", pos: "ROAM", ovr: 85, mic: 85, mac: 85, dpm: 1590, gpm: 465, kp: 77, srv: 82, hair: "#171717", glasses: false, skin: "#dfa582" }
+        ]
+      },
+      {
+        id: "todak-m3", name: "TODAK", short: "TDK", edition: "M3", year: "2021", region: "MY",
+        primary: "#0284c7", secondary: "#0f172a", accent: "#bae6fd",
+        players: [
+          { name: "Momo", pos: "EXP", ovr: 84, mic: 84, mac: 84, dpm: 3160, gpm: 615, kp: 66, srv: 82, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "4Meyz", pos: "JGL", ovr: 85, mic: 86, mac: 84, dpm: 3780, gpm: 725, kp: 70, srv: 82, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "Moon", pos: "MID", ovr: 87, mic: 86, mac: 88, dpm: 4490, gpm: 645, kp: 76, srv: 86, hair: "#18181b", glasses: true, skin: "#ecc0a1" },
+          { name: "Ciku", pos: "GOLD", ovr: 87, mic: 89, mac: 85, dpm: 4690, gpm: 765, kp: 70, srv: 84, hair: "#262626", glasses: false, skin: "#e3ad8a" },
+          { name: "Moyy", pos: "ROAM", ovr: 84, mic: 85, mac: 83, dpm: 4310, gpm: 735, kp: 67, srv: 82, hair: "#171717", glasses: false, skin: "#d99b76" }
+        ]
+      },
+      {
+        id: "navi-m3", name: "NATUS VINCERE", short: "NAVI", edition: "M3", year: "2021", region: "EECA",
+        primary: "#eab308", secondary: "#090d16", accent: "#fef08a",
+        players: [
+          { name: "Lil", pos: "EXP", ovr: 84, mic: 84, mac: 84, dpm: 3160, gpm: 615, kp: 66, srv: 82, hair: "#4a3728", glasses: false, skin: "#f4d2ba" },
+          { name: "Defender", pos: "JGL", ovr: 84, mic: 85, mac: 83, dpm: 3690, gpm: 715, kp: 69, srv: 81, hair: "#3b2f2f", glasses: false, skin: "#f1ccb2" },
+          { name: "Sunset Lover", pos: "MID", ovr: 85, mic: 85, mac: 85, dpm: 4360, gpm: 635, kp: 74, srv: 83, hair: "#5c4033", glasses: true, skin: "#f5d5be" },
+          { name: "Nagib", pos: "GOLD", ovr: 83, mic: 84, mac: 82, dpm: 4290, gpm: 725, kp: 66, srv: 81, hair: "#2b211a", glasses: false, skin: "#f2cbb0" },
+          { name: "Sawo", pos: "ROAM", ovr: 85, mic: 83, mac: 87, dpm: 1580, gpm: 465, kp: 77, srv: 83, hair: "#3f2e21", glasses: false, skin: "#efd0b8" }
+        ]
+      },
+      {
+        id: "evossg-m3", name: "EVOS SG", short: "EVSG", edition: "M3", year: "2021", region: "SG",
+        primary: "#1d4ed8", secondary: "#0f172a", accent: "#bfdbfe",
+        players: [
+          { name: "Soul", pos: "EXP", ovr: 86, mic: 85, mac: 87, dpm: 3310, gpm: 625, kp: 68, srv: 85, hair: "#171717", glasses: false, skin: "#ecc0a1" },
+          { name: "Potato", pos: "JGL", ovr: 86, mic: 88, mac: 84, dpm: 3920, gpm: 745, kp: 71, srv: 83, hair: "#18181b", glasses: false, skin: "#e8b695" },
+          { name: "Adammir", pos: "MID", ovr: 84, mic: 85, mac: 83, dpm: 3190, gpm: 615, kp: 66, srv: 82, hair: "#262626", glasses: false, skin: "#ecc0a1" },
+          { name: "Pokemon", pos: "GOLD", ovr: 85, mic: 86, mac: 84, dpm: 4480, gpm: 745, kp: 67, srv: 83, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "JPL", pos: "ROAM", ovr: 86, mic: 84, mac: 88, dpm: 1610, gpm: 465, kp: 77, srv: 84, hair: "#171717", glasses: false, skin: "#e2ab88" }
+        ]
+      },
+
+      // -------------------- M4 WORLD CHAMPIONSHIP (2023) --------------------
+      {
+        id: "echo-m4", name: "ECHO", short: "ECHO", edition: "M4", year: "2023", region: "PH",
+        primary: "#7c3aed", secondary: "#1e1b4b", accent: "#ddd6fe",
+        players: [
+          { name: "Sanford", pos: "EXP", ovr: 93, mic: 93, mac: 93, dpm: 3790, gpm: 675, kp: 72, srv: 91, hair: "#171717", glasses: false, skin: "#e5af8c" },
+          { name: "KarlTzy", pos: "JGL", ovr: 95, mic: 95, mac: 95, dpm: 4340, gpm: 765, kp: 75, srv: 92, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "Sanji", pos: "MID", ovr: 93, mic: 92, mac: 94, dpm: 4880, gpm: 680, kp: 81, srv: 91, hair: "#18181b", glasses: true, skin: "#ecc0a1" },
+          { name: "Bennyqt", pos: "GOLD", ovr: 95, mic: 95, mac: 94, dpm: 5380, gpm: 830, kp: 73, srv: 92, hair: "#262626", glasses: false, skin: "#e3ad8a" },
+          { name: "Yawi", pos: "ROAM", ovr: 93, mic: 93, mac: 93, dpm: 1880, gpm: 500, kp: 83, srv: 89, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Jaypee", pos: "ROAM", isSub: true, ovr: 82, mic: 81, mac: 83, dpm: 1540, gpm: 460, kp: 74, srv: 80, hair: "#262626", glasses: false, skin: "#e2ab88" }
+        ]
+      },
+      {
+        id: "blck-m4", name: "BLACKLIST INTL", short: "BLCK", edition: "M4", year: "2023", region: "PH",
+        primary: "#e5e7eb", secondary: "#111827", accent: "#ffffff",
+        players: [
+          { name: "Edward", pos: "EXP", ovr: 91, mic: 90, mac: 92, dpm: 3640, gpm: 655, kp: 72, srv: 89, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Wise", pos: "JGL", ovr: 91, mic: 87, mac: 94, dpm: 3690, gpm: 750, kp: 77, srv: 89, hair: "#292524", glasses: false, skin: "#e6b290" },
+          { name: "Hadji", pos: "MID", ovr: 91, mic: 90, mac: 92, dpm: 4760, gpm: 665, kp: 79, srv: 89, hair: "#18181b", glasses: false, skin: "#e2ab88" },
+          { name: "Oheb", pos: "GOLD", ovr: 91, mic: 92, mac: 89, dpm: 5140, gpm: 810, kp: 70, srv: 88, hair: "#1c1917", glasses: false, skin: "#dba07c" },
+          { name: "OhMyV33NUS", pos: "ROAM", ovr: 92, mic: 85, mac: 96, dpm: 1680, gpm: 485, kp: 83, srv: 90, hair: "#2b211a", glasses: true, skin: "#ecc0a1" }
+        ]
+      },
+      {
+        id: "rrq-m4", name: "RRQ HOSHI", short: "RRQ", edition: "M4", year: "2023", region: "ID",
+        primary: "#f59e0b", secondary: "#111827", accent: "#fef3c7",
+        players: [
+          { name: "R7", pos: "EXP", ovr: 91, mic: 90, mac: 92, dpm: 3640, gpm: 655, kp: 72, srv: 90, hair: "#18181b", glasses: false, skin: "#e2aa87" },
+          { name: "Alberttt", pos: "JGL", ovr: 92, mic: 95, mac: 89, dpm: 4360, gpm: 790, kp: 73, srv: 89, hair: "#171717", glasses: true, skin: "#edc2a4" },
+          { name: "Clayyy", pos: "MID", ovr: 89, mic: 88, mac: 90, dpm: 4760, gpm: 665, kp: 78, srv: 87, hair: "#27201c", glasses: false, skin: "#e6b290" },
+          { name: "Skylar", pos: "GOLD", ovr: 89, mic: 91, mac: 87, dpm: 5040, gpm: 795, kp: 70, srv: 86, hair: "#1c1917", glasses: false, skin: "#dfa582" },
+          { name: "Vynnn", pos: "ROAM", ovr: 90, mic: 86, mac: 93, dpm: 1680, gpm: 485, kp: 81, srv: 87, hair: "#1c1917", glasses: true, skin: "#f0c3a5" },
+          { name: "Lemon", pos: "MID", isSub: true, ovr: 82, mic: 83, mac: 81, dpm: 4180, gpm: 620, kp: 70, srv: 81, hair: "#141414", glasses: false, skin: "#ecc0a1" }
+        ]
+      },
+      {
+        id: "onic-m4", name: "ONIC ESPORTS", short: "ONIC", edition: "M4", year: "2023", region: "ID",
+        primary: "#facc15", secondary: "#18181b", accent: "#ffffff",
+        players: [
+          { name: "Butss", pos: "EXP", ovr: 88, mic: 87, mac: 89, dpm: 3410, gpm: 635, kp: 70, srv: 87, hair: "#171717", glasses: false, skin: "#dca17c" },
+          { name: "Kairi", pos: "JGL", ovr: 90, mic: 93, mac: 87, dpm: 4240, gpm: 780, kp: 72, srv: 87, hair: "#18181b", glasses: false, skin: "#edc2a4" },
+          { name: "Sanz", pos: "MID", ovr: 89, mic: 90, mac: 88, dpm: 4820, gpm: 670, kp: 78, srv: 87, hair: "#292524", glasses: false, skin: "#e6b290" },
+          { name: "CW", pos: "GOLD", ovr: 88, mic: 89, mac: 87, dpm: 4890, gpm: 785, kp: 70, srv: 86, hair: "#1c1917", glasses: false, skin: "#ecc0a1" },
+          { name: "Kiboy", pos: "ROAM", ovr: 88, mic: 88, mac: 88, dpm: 1720, gpm: 480, kp: 80, srv: 85, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Drian", pos: "MID", isSub: true, ovr: 83, mic: 82, mac: 84, dpm: 4210, gpm: 620, kp: 73, srv: 82, hair: "#18181b", glasses: true, skin: "#ecc0a1" }
+        ]
+      },
+      {
+        id: "falcon-m4", name: "FALCON ESPORTS", short: "FLCN", edition: "M4", year: "2023", region: "MM",
+        primary: "#06b6d4", secondary: "#0f172a", accent: "#cffafe",
+        players: [
+          { name: "Silent", pos: "EXP", ovr: 85, mic: 85, mac: 85, dpm: 3240, gpm: 620, kp: 67, srv: 83, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Kenn", pos: "JGL", ovr: 86, mic: 88, mac: 84, dpm: 3960, gpm: 745, kp: 71, srv: 83, hair: "#18181b", glasses: false, skin: "#e5af8c" },
+          { name: "Justin", pos: "MID", ovr: 86, mic: 86, mac: 86, dpm: 4480, gpm: 645, kp: 76, srv: 84, hair: "#262626", glasses: true, skin: "#ecc0a1" },
+          { name: "Yellowflash", pos: "GOLD", ovr: 85, mic: 86, mac: 84, dpm: 4540, gpm: 755, kp: 68, srv: 83, hair: "#1c1917", glasses: false, skin: "#e2ab88" },
+          { name: "Naomi", pos: "ROAM", ovr: 86, mic: 85, mac: 87, dpm: 1640, gpm: 475, kp: 79, srv: 84, hair: "#171717", glasses: false, skin: "#ecc0a1" }
+        ]
+      },
+      {
+        id: "valley-m4", name: "THE VALLEY", short: "TV", edition: "M4", year: "2023", region: "NA",
+        primary: "#ef4444", secondary: "#0f172a", accent: "#fecaca",
+        players: [
+          { name: "FwydChickn", pos: "EXP", ovr: 86, mic: 87, mac: 85, dpm: 3390, gpm: 630, kp: 68, srv: 84, hair: "#3f2e21", glasses: false, skin: "#f2cbb0" },
+          { name: "MobaZane", pos: "JGL", ovr: 86, mic: 87, mac: 85, dpm: 3980, gpm: 745, kp: 72, srv: 83, hair: "#292018", glasses: false, skin: "#efd0b8" },
+          { name: "Hoon", pos: "MID", ovr: 86, mic: 88, mac: 84, dpm: 4560, gpm: 645, kp: 74, srv: 83, hair: "#18181b", glasses: true, skin: "#f1ccb2" },
+          { name: "Basic", pos: "GOLD", ovr: 84, mic: 85, mac: 83, dpm: 4410, gpm: 735, kp: 66, srv: 82, hair: "#171717", glasses: false, skin: "#ecc0a1" },
+          { name: "Shark", pos: "ROAM", ovr: 85, mic: 84, mac: 86, dpm: 1590, gpm: 465, kp: 77, srv: 83, hair: "#221c18", glasses: false, skin: "#e5af8c" }
+        ]
+      },
+      {
+        id: "akira-m4", name: "RRQ AKIRA", short: "AKRA", edition: "M4", year: "2023", region: "BR",
+        primary: "#f59e0b", secondary: "#111827", accent: "#fef08a",
+        players: [
+          { name: "Tekashi", pos: "EXP", ovr: 84, mic: 84, mac: 84, dpm: 3180, gpm: 615, kp: 66, srv: 82, hair: "#2b211a", glasses: false, skin: "#e2ab88" },
+          { name: "Kiing", pos: "JGL", ovr: 85, mic: 87, mac: 83, dpm: 3840, gpm: 730, kp: 70, srv: 82, hair: "#18181b", glasses: false, skin: "#dfa582" },
+          { name: "Seigen", pos: "MID", ovr: 84, mic: 84, mac: 84, dpm: 4290, gpm: 630, kp: 74, srv: 82, hair: "#262626", glasses: true, skin: "#e8b695" },
+          { name: "Gustalagusta", pos: "GOLD", ovr: 85, mic: 86, mac: 84, dpm: 4510, gpm: 750, kp: 67, srv: 83, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "Luiizz", pos: "ROAM", ovr: 84, mic: 82, mac: 86, dpm: 1560, gpm: 465, kp: 76, srv: 82, hair: "#171717", glasses: false, skin: "#d99b76" }
+        ]
+      },
+      {
+        id: "todak-m4", name: "TODAK", short: "TDK", edition: "M4", year: "2023", region: "MY",
+        primary: "#0284c7", secondary: "#0f172a", accent: "#bae6fd",
+        players: [
+          { name: "Momo", pos: "EXP", ovr: 83, mic: 83, mac: 83, dpm: 3090, gpm: 605, kp: 65, srv: 81, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Rival", pos: "JGL", ovr: 85, mic: 86, mac: 84, dpm: 3790, gpm: 725, kp: 70, srv: 82, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "Moon", pos: "MID", ovr: 85, mic: 84, mac: 86, dpm: 4340, gpm: 635, kp: 74, srv: 84, hair: "#18181b", glasses: true, skin: "#ecc0a1" },
+          { name: "CikuGais", pos: "GOLD", ovr: 85, mic: 87, mac: 83, dpm: 4520, gpm: 750, kp: 68, srv: 82, hair: "#262626", glasses: false, skin: "#e3ad8a" },
+          { name: "YumSkie", pos: "ROAM", ovr: 83, mic: 82, mac: 84, dpm: 1520, gpm: 460, kp: 75, srv: 81, hair: "#171717", glasses: false, skin: "#d99b76" }
+        ]
+      },
+
+      // -------------------- M5 WORLD CHAMPIONSHIP (2023) --------------------
+      {
+        id: "apbren-m5", name: "AP.BREN", short: "APBR", edition: "M5", year: "2023", region: "PH",
+        primary: "#eab308", secondary: "#090d16", accent: "#fef08a",
+        players: [
+          { name: "FlapTzy", pos: "EXP", ovr: 95, mic: 94, mac: 94, dpm: 3920, gpm: 685, kp: 73, srv: 92, hair: "#171717", glasses: false, skin: "#dda27e" },
+          { name: "KyleTzy", pos: "JGL", ovr: 94, mic: 95, mac: 92, dpm: 4390, gpm: 795, kp: 75, srv: 91, hair: "#18181b", glasses: false, skin: "#e5af8c" },
+          { name: "Pheww", pos: "MID", ovr: 95, mic: 91, mac: 98, dpm: 4940, gpm: 685, kp: 83, srv: 93, hair: "#18181b", glasses: true, skin: "#e2ab88" },
+          { name: "Super Marco", pos: "GOLD", ovr: 94, mic: 95, mac: 92, dpm: 5360, gpm: 830, kp: 73, srv: 91, hair: "#262626", glasses: false, skin: "#ecc0a1" },
+          { name: "Owgwen", pos: "ROAM", ovr: 93, mic: 91, mac: 95, dpm: 1860, gpm: 500, kp: 84, srv: 90, hair: "#171717", glasses: true, skin: "#e8b695" },
+          { name: "Pandaman", pos: "EXP", isSub: true, ovr: 80, mic: 80, mac: 80, dpm: 3120, gpm: 605, kp: 64, srv: 79, hair: "#171717", glasses: false, skin: "#e5af8c" }
+        ]
+      },
+      {
+        id: "onic-m5", name: "ONIC ESPORTS", short: "ONIC", edition: "M5", year: "2023", region: "ID",
+        primary: "#facc15", secondary: "#18181b", accent: "#ffffff",
+        players: [
+          { name: "Butss", pos: "EXP", ovr: 90, mic: 88, mac: 92, dpm: 3490, gpm: 645, kp: 72, srv: 89, hair: "#171717", glasses: false, skin: "#dca17c" },
+          { name: "Kairi", pos: "JGL", ovr: 94, mic: 97, mac: 90, dpm: 4410, gpm: 805, kp: 74, srv: 91, hair: "#18181b", glasses: false, skin: "#edc2a4" },
+          { name: "Sanz", pos: "MID", ovr: 93, mic: 94, mac: 92, dpm: 5120, gpm: 700, kp: 80, srv: 90, hair: "#292524", glasses: false, skin: "#e6b290" },
+          { name: "CW", pos: "GOLD", ovr: 91, mic: 91, mac: 90, dpm: 5040, gpm: 805, kp: 72, srv: 89, hair: "#1c1917", glasses: false, skin: "#ecc0a1" },
+          { name: "Kiboy", pos: "ROAM", ovr: 93, mic: 93, mac: 93, dpm: 1920, gpm: 505, kp: 83, srv: 89, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Alberttt", pos: "JGL", isSub: true, ovr: 83, mic: 85, mac: 81, dpm: 3790, gpm: 720, kp: 68, srv: 81, hair: "#171717", glasses: true, skin: "#edc2a4" }
+        ]
+      },
+      {
+        id: "blck-m5", name: "BLACKLIST INTL", short: "BLCK", edition: "M5", year: "2023", region: "PH",
+        primary: "#e5e7eb", secondary: "#111827", accent: "#ffffff",
+        players: [
+          { name: "Edward", pos: "EXP", ovr: 90, mic: 89, mac: 91, dpm: 3580, gpm: 650, kp: 71, srv: 88, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Sensui", pos: "JGL", ovr: 88, mic: 87, mac: 89, dpm: 3790, gpm: 735, kp: 74, srv: 87, hair: "#18181b", glasses: false, skin: "#e5af8c" },
+          { name: "Yue", pos: "MID", ovr: 89, mic: 88, mac: 90, dpm: 4690, gpm: 660, kp: 78, srv: 87, hair: "#262626", glasses: true, skin: "#ecc0a1" },
+          { name: "Oheb", pos: "GOLD", ovr: 89, mic: 90, mac: 88, dpm: 4980, gpm: 795, kp: 69, srv: 87, hair: "#1c1917", glasses: false, skin: "#dba07c" },
+          { name: "Renejay", pos: "ROAM", ovr: 88, mic: 87, mac: 89, dpm: 1690, gpm: 480, kp: 80, srv: 85, hair: "#171717", glasses: false, skin: "#e2ab88" },
+          { name: "Hadji", pos: "MID", isSub: true, ovr: 86, mic: 85, mac: 87, dpm: 4460, gpm: 640, kp: 76, srv: 85, hair: "#18181b", glasses: false, skin: "#e2ab88" }
+        ]
+      },
+      {
+        id: "deus-m5", name: "DEUS VULT", short: "DEUS", edition: "M5", year: "2023", region: "EECA",
+        primary: "#ef4444", secondary: "#18181b", accent: "#fecaca",
+        players: [
+          { name: "Kid Bomba", pos: "EXP", ovr: 89, mic: 90, mac: 88, dpm: 3580, gpm: 650, kp: 71, srv: 86, hair: "#4a3728", glasses: false, skin: "#f4d2ba" },
+          { name: "Magistor", pos: "JGL", ovr: 87, mic: 88, mac: 86, dpm: 3940, gpm: 745, kp: 72, srv: 84, hair: "#3b2f2f", glasses: false, skin: "#f1ccb2" },
+          { name: "Sunset Lover", pos: "MID", ovr: 90, mic: 90, mac: 90, dpm: 4810, gpm: 670, kp: 77, srv: 87, hair: "#5c4033", glasses: true, skin: "#f5d5be" },
+          { name: "Carvi", pos: "GOLD", ovr: 88, mic: 89, mac: 87, dpm: 4890, gpm: 785, kp: 71, srv: 85, hair: "#2b211a", glasses: false, skin: "#f2cbb0" },
+          { name: "SAWO", pos: "ROAM", ovr: 90, mic: 87, mac: 92, dpm: 1780, gpm: 490, kp: 81, srv: 87, hair: "#3f2e21", glasses: false, skin: "#efd0b8" }
+        ]
+      },
+      {
+        id: "geek-m5", name: "GEEK FAM ID", short: "GEEK", edition: "M5", year: "2023", region: "ID",
+        primary: "#dc2626", secondary: "#090d16", accent: "#fecaca",
+        players: [
+          { name: "Luke", pos: "EXP", ovr: 86, mic: 86, mac: 86, dpm: 3340, gpm: 625, kp: 68, srv: 84, hair: "#171717", glasses: false, skin: "#e5af8c" },
+          { name: "Nnael", pos: "JGL", ovr: 87, mic: 89, mac: 85, dpm: 4060, gpm: 755, kp: 72, srv: 83, hair: "#18181b", glasses: false, skin: "#ecc0a1" },
+          { name: "Aboy", pos: "MID", ovr: 86, mic: 86, mac: 86, dpm: 4490, gpm: 645, kp: 75, srv: 84, hair: "#262626", glasses: true, skin: "#e8b695" },
+          { name: "Markyyy", pos: "GOLD", ovr: 88, mic: 89, mac: 87, dpm: 4840, gpm: 780, kp: 70, srv: 86, hair: "#171717", glasses: false, skin: "#e8b695" },
+          { name: "Baloyskie", pos: "ROAM", ovr: 89, mic: 86, mac: 93, dpm: 1840, gpm: 490, kp: 81, srv: 86, hair: "#1c1917", glasses: true, skin: "#dfa582" }
+        ]
+      },
+      {
+        id: "sys-m5", name: "SEE YOU SOON", short: "SYS", edition: "M5", year: "2023", region: "KH",
+        primary: "#f97316", secondary: "#0f172a", accent: "#fed7aa",
+        players: [
+          { name: "Felix", pos: "EXP", ovr: 85, mic: 85, mac: 85, dpm: 3260, gpm: 620, kp: 67, srv: 83, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "MP the King", pos: "JGL", ovr: 86, mic: 88, mac: 84, dpm: 3980, gpm: 745, kp: 71, srv: 83, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "Raa", pos: "MID", ovr: 85, mic: 85, mac: 85, dpm: 4360, gpm: 635, kp: 74, srv: 83, hair: "#18181b", glasses: true, skin: "#ecc0a1" },
+          { name: "Kusey", pos: "GOLD", ovr: 85, mic: 86, mac: 84, dpm: 4560, gpm: 755, kp: 68, srv: 83, hair: "#262626", glasses: false, skin: "#e2ab88" },
+          { name: "Boxi", pos: "ROAM", ovr: 86, mic: 85, mac: 87, dpm: 1640, gpm: 475, kp: 78, srv: 84, hair: "#171717", glasses: false, skin: "#dfa582" }
+        ]
+      },
+      {
+        id: "homebois-m5", name: "HOMEBOIS", short: "HB", edition: "M5", year: "2023", region: "MY",
+        primary: "#eab308", secondary: "#111827", accent: "#fef08a",
+        players: [
+          { name: "Sepat", pos: "EXP", ovr: 81, mic: 81, mac: 81, dpm: 2980, gpm: 595, kp: 63, srv: 79, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Chibi", pos: "JGL", ovr: 81, mic: 82, mac: 80, dpm: 3540, gpm: 695, kp: 66, srv: 79, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "Warlord", pos: "MID", ovr: 81, mic: 81, mac: 81, dpm: 4040, gpm: 605, kp: 70, srv: 79, hair: "#18181b", glasses: false, skin: "#e2ab88" },
+          { name: "RaizeL", pos: "GOLD", ovr: 81, mic: 82, mac: 80, dpm: 4180, gpm: 710, kp: 64, srv: 79, hair: "#262626", glasses: false, skin: "#ecc0a1" },
+          { name: "Xorn", pos: "ROAM", ovr: 80, mic: 80, mac: 80, dpm: 1440, gpm: 445, kp: 72, srv: 78, hair: "#171717", glasses: false, skin: "#d99b76" }
+        ]
+      },
+
+      // -------------------- M6 WORLD CHAMPIONSHIP (2024) --------------------
+      {
+        id: "fnoc-m6", name: "FNATIC ONIC PH", short: "FNOC", edition: "M6", year: "2024", region: "PH",
+        primary: "#f97316", secondary: "#111827", accent: "#fed7aa",
+        players: [
+          { name: "Kirk", pos: "EXP", ovr: 93, mic: 93, mac: 93, dpm: 3790, gpm: 675, kp: 72, srv: 91, hair: "#171717", glasses: false, skin: "#e3ad8a" },
+          { name: "K1NGKONG", pos: "JGL", ovr: 94, mic: 96, mac: 92, dpm: 4460, gpm: 805, kp: 75, srv: 91, hair: "#1c1917", glasses: false, skin: "#dfa582" },
+          { name: "Super Frince", pos: "MID", ovr: 94, mic: 93, mac: 95, dpm: 5080, gpm: 695, kp: 83, srv: 92, hair: "#18181b", glasses: true, skin: "#ecc0a1" },
+          { name: "Kelra", pos: "GOLD", ovr: 96, mic: 98, mac: 91, dpm: 5680, gpm: 855, kp: 75, srv: 92, hair: "#262626", glasses: false, skin: "#e5af8c" },
+          { name: "Brusko", pos: "ROAM", ovr: 93, mic: 92, mac: 94, dpm: 1890, gpm: 505, kp: 84, srv: 90, hair: "#171717", glasses: false, skin: "#d99b76" },
+          { name: "SpiderMilez", pos: "MID", isSub: true, ovr: 80, mic: 80, mac: 80, dpm: 3140, gpm: 605, kp: 64, srv: 79, hair: "#18181b", glasses: false, skin: "#e5af8c" }
+        ]
+      },
+      {
+        id: "tlid-m6", name: "TEAM LIQUID ID", short: "TLID", edition: "M6", year: "2024", region: "ID",
+        primary: "#2563eb", secondary: "#0f172a", accent: "#bfdbfe",
+        players: [
+          { name: "Aran", pos: "EXP", ovr: 90, mic: 90, mac: 90, dpm: 3590, gpm: 650, kp: 71, srv: 88, hair: "#18181b", glasses: false, skin: "#e6b290" },
+          { name: "Faviannn", pos: "JGL", ovr: 91, mic: 93, mac: 89, dpm: 4290, gpm: 785, kp: 74, srv: 88, hair: "#171717", glasses: false, skin: "#ecc0a1" },
+          { name: "Yehezkiel", pos: "MID", ovr: 90, mic: 90, mac: 90, dpm: 4790, gpm: 670, kp: 79, srv: 88, hair: "#262626", glasses: true, skin: "#e8b695" },
+          { name: "AeronnShikii", pos: "GOLD", ovr: 91, mic: 92, mac: 89, dpm: 5160, gpm: 810, kp: 72, srv: 88, hair: "#1c1917", glasses: false, skin: "#e2ab88" },
+          { name: "Widy", pos: "ROAM", ovr: 90, mic: 89, mac: 91, dpm: 1790, gpm: 490, kp: 82, srv: 88, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Kabuki", pos: "GOLD", isSub: true, ovr: 82, mic: 83, mac: 81, dpm: 4210, gpm: 715, kp: 65, srv: 80, hair: "#18181b", glasses: false, skin: "#e5af8c" }
+        ]
+      },
+      {
+        id: "srg-m6", name: "SELANGOR RED GIANTS", short: "SRG", edition: "M6", year: "2024", region: "MY",
+        primary: "#dc2626", secondary: "#facc15", accent: "#ffffff",
+        players: [
+          { name: "Kramm", pos: "EXP", ovr: 89, mic: 89, mac: 89, dpm: 3520, gpm: 645, kp: 70, srv: 87, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Sekys", pos: "JGL", ovr: 91, mic: 93, mac: 89, dpm: 4240, gpm: 780, kp: 74, srv: 88, hair: "#1c1917", glasses: false, skin: "#e7b492" },
+          { name: "Stormie", pos: "MID", ovr: 90, mic: 90, mac: 90, dpm: 4840, gpm: 675, kp: 79, srv: 88, hair: "#27272a", glasses: true, skin: "#ecc0a1" },
+          { name: "Innocent", pos: "GOLD", ovr: 91, mic: 93, mac: 88, dpm: 5240, gpm: 820, kp: 72, srv: 88, hair: "#18181b", glasses: false, skin: "#e5af8c" },
+          { name: "YumS", pos: "ROAM", ovr: 89, mic: 88, mac: 90, dpm: 1780, gpm: 490, kp: 81, srv: 87, hair: "#262626", glasses: false, skin: "#e2ab88" },
+          { name: "Gojes", pos: "EXP", isSub: true, ovr: 80, mic: 80, mac: 80, dpm: 3080, gpm: 600, kp: 63, srv: 79, hair: "#171717", glasses: false, skin: "#dfa582" }
+        ]
+      },
+      {
+        id: "spirit-m6", name: "TEAM SPIRIT", short: "TS", edition: "M6", year: "2024", region: "EECA",
+        primary: "#06b6d4", secondary: "#0f172a", accent: "#cffafe",
+        players: [
+          { name: "Kid Bomba", pos: "EXP", ovr: 90, mic: 91, mac: 89, dpm: 3640, gpm: 655, kp: 71, srv: 87, hair: "#4a3728", glasses: false, skin: "#f4d2ba" },
+          { name: "ONESHOT", pos: "JGL", ovr: 89, mic: 91, mac: 87, dpm: 4180, gpm: 770, kp: 74, srv: 86, hair: "#3b2f2f", glasses: false, skin: "#f1ccb2" },
+          { name: "Sunset Lover", pos: "MID", ovr: 91, mic: 91, mac: 91, dpm: 4890, gpm: 680, kp: 78, srv: 88, hair: "#5c4033", glasses: true, skin: "#f5d5be" },
+          { name: "Hiko", pos: "GOLD", ovr: 89, mic: 90, mac: 88, dpm: 4960, gpm: 795, kp: 71, srv: 86, hair: "#2b211a", glasses: false, skin: "#f2cbb0" },
+          { name: "SAWO", pos: "ROAM", ovr: 91, mic: 88, mac: 93, dpm: 1810, gpm: 495, kp: 82, srv: 88, hair: "#3f2e21", glasses: false, skin: "#efd0b8" }
+        ]
+      },
+      {
+        id: "rrq-m6", name: "RRQ HOSHI", short: "RRQ", edition: "M6", year: "2024", region: "ID",
+        primary: "#f59e0b", secondary: "#111827", accent: "#fef3c7",
+        players: [
+          { name: "Dyrennn", pos: "EXP", ovr: 87, mic: 87, mac: 87, dpm: 3390, gpm: 630, kp: 68, srv: 85, hair: "#171717", glasses: false, skin: "#e5af8c" },
+          { name: "Sutsujin", pos: "JGL", ovr: 88, mic: 89, mac: 87, dpm: 4040, gpm: 755, kp: 72, srv: 85, hair: "#18181b", glasses: false, skin: "#ecc0a1" },
+          { name: "Rinz", pos: "MID", ovr: 87, mic: 87, mac: 87, dpm: 4560, gpm: 650, kp: 76, srv: 85, hair: "#262626", glasses: true, skin: "#e8b695" },
+          { name: "Skylar", pos: "GOLD", ovr: 90, mic: 92, mac: 87, dpm: 5120, gpm: 805, kp: 71, srv: 87, hair: "#1c1917", glasses: false, skin: "#dfa582" },
+          { name: "Idok", pos: "ROAM", ovr: 87, mic: 86, mac: 88, dpm: 1660, gpm: 475, kp: 79, srv: 85, hair: "#171717", glasses: false, skin: "#e2ab88" },
+          { name: "Hazle", pos: "JGL", isSub: true, ovr: 79, mic: 80, mac: 78, dpm: 3410, gpm: 680, kp: 65, srv: 77, hair: "#18181b", glasses: false, skin: "#ecc0a1" }
+        ]
+      },
+      {
+        id: "aurora-m6", name: "AURORA GAMING PH", short: "RORA", edition: "M6", year: "2024", region: "PH",
+        primary: "#10b981", secondary: "#064e3b", accent: "#d1fae5",
+        players: [
+          { name: "Edward", pos: "EXP", ovr: 82, mic: 82, mac: 82, dpm: 3080, gpm: 605, kp: 65, srv: 80, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Demonkite", pos: "JGL", ovr: 82, mic: 83, mac: 81, dpm: 3640, gpm: 710, kp: 68, srv: 80, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "Yue", pos: "MID", ovr: 82, mic: 82, mac: 82, dpm: 4140, gpm: 615, kp: 71, srv: 80, hair: "#262626", glasses: true, skin: "#ecc0a1" },
+          { name: "Domeng", pos: "GOLD", ovr: 82, mic: 83, mac: 81, dpm: 4260, gpm: 720, kp: 65, srv: 80, hair: "#18181b", glasses: false, skin: "#e3ad8a" },
+          { name: "Renejay", pos: "ROAM", ovr: 81, mic: 80, mac: 82, dpm: 1460, gpm: 450, kp: 73, srv: 79, hair: "#171717", glasses: false, skin: "#e2ab88" },
+          { name: "Bentings", pos: "EXP", isSub: true, ovr: 76, mic: 76, mac: 76, dpm: 2820, gpm: 570, kp: 61, srv: 75, hair: "#171717", glasses: false, skin: "#e5af8c" }
+        ]
+      },
+      {
+        id: "vamos-m6", name: "TEAM VAMOS", short: "VMS", edition: "M6", year: "2024", region: "MY",
+        primary: "#f97316", secondary: "#0f172a", accent: "#fed7aa",
+        players: [
+          { name: "Sepat", pos: "EXP", ovr: 85, mic: 85, mac: 85, dpm: 3260, gpm: 620, kp: 67, srv: 83, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Chibi", pos: "JGL", ovr: 85, mic: 86, mac: 84, dpm: 3840, gpm: 730, kp: 70, srv: 82, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "Warlord", pos: "MID", ovr: 85, mic: 85, mac: 85, dpm: 4390, gpm: 635, kp: 74, srv: 83, hair: "#18181b", glasses: false, skin: "#e2ab88" },
+          { name: "Nets", pos: "GOLD", ovr: 85, mic: 86, mac: 84, dpm: 4540, gpm: 755, kp: 68, srv: 83, hair: "#262626", glasses: false, skin: "#ecc0a1" },
+          { name: "Xorn", pos: "ROAM", ovr: 85, mic: 85, mac: 85, dpm: 1610, gpm: 470, kp: 77, srv: 82, hair: "#171717", glasses: false, skin: "#d99b76" }
+        ]
+      },
+      {
+        id: "btk-m6", name: "BTK", short: "BTK", edition: "M6", year: "2024", region: "NA",
+        primary: "#ef4444", secondary: "#0f172a", accent: "#fca5a5",
+        players: [
+          { name: "Mielow", pos: "EXP", ovr: 80, mic: 80, mac: 80, dpm: 2890, gpm: 585, kp: 62, srv: 79, hair: "#3f2e21", glasses: false, skin: "#f2cbb0" },
+          { name: "MobaZane", pos: "JGL", ovr: 81, mic: 82, mac: 80, dpm: 3560, gpm: 700, kp: 67, srv: 79, hair: "#292018", glasses: false, skin: "#efd0b8" },
+          { name: "Hoon", pos: "MID", ovr: 81, mic: 82, mac: 80, dpm: 4080, gpm: 610, kp: 70, srv: 79, hair: "#18181b", glasses: true, skin: "#f1ccb2" },
+          { name: "Basic", pos: "GOLD", ovr: 80, mic: 81, mac: 79, dpm: 4090, gpm: 705, kp: 63, srv: 78, hair: "#171717", glasses: false, skin: "#ecc0a1" },
+          { name: "Shark", pos: "ROAM", ovr: 80, mic: 79, mac: 81, dpm: 1420, gpm: 445, kp: 72, srv: 78, hair: "#221c18", glasses: false, skin: "#e5af8c" },
+          { name: "FwydChickn", pos: "EXP", isSub: true, ovr: 78, mic: 78, mac: 78, dpm: 2840, gpm: 575, kp: 61, srv: 77, hair: "#3f2e21", glasses: false, skin: "#f2cbb0" }
+        ]
+      },
+
+      // -------------------- M7 WORLD CHAMPIONSHIP (2026) --------------------
+      {
+        id: "aurora-m7", name: "AURORA GAMING PH", short: "RORA", edition: "M7", year: "2026", region: "PH",
+        primary: "#10b981", secondary: "#064e3b", accent: "#d1fae5",
+        players: [
+          { name: "Edward", pos: "EXP", ovr: 95, mic: 93, mac: 96, dpm: 3810, gpm: 675, kp: 74, srv: 93, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Demonkite", pos: "JGL", ovr: 94, mic: 96, mac: 92, dpm: 4440, gpm: 800, kp: 76, srv: 91, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "Yue", pos: "MID", ovr: 93, mic: 92, mac: 94, dpm: 4920, gpm: 685, kp: 82, srv: 91, hair: "#262626", glasses: true, skin: "#ecc0a1" },
+          { name: "Domeng", pos: "GOLD", ovr: 94, mic: 95, mac: 92, dpm: 5320, gpm: 825, kp: 73, srv: 91, hair: "#18181b", glasses: false, skin: "#e3ad8a" },
+          { name: "Light", pos: "ROAM", ovr: 95, mic: 94, mac: 96, dpm: 1940, gpm: 510, kp: 86, srv: 92, hair: "#171717", glasses: false, skin: "#e8b695" }
+        ]
+      },
+      {
+        id: "ae-m7", name: "ALTER EGO", short: "AE", edition: "M7", year: "2026", region: "ID",
+        primary: "#e11d48", secondary: "#111827", accent: "#ffe4e6",
+        players: [
+          { name: "Nino", pos: "EXP", ovr: 91, mic: 92, mac: 90, dpm: 3680, gpm: 660, kp: 72, srv: 89, hair: "#18181b", glasses: false, skin: "#e6b290" },
+          { name: "Yazukee", pos: "JGL", ovr: 90, mic: 91, mac: 89, dpm: 4140, gpm: 770, kp: 73, srv: 87, hair: "#171717", glasses: false, skin: "#ecc0a1" },
+          { name: "Hijumee", pos: "MID", ovr: 90, mic: 90, mac: 90, dpm: 4810, gpm: 670, kp: 79, srv: 88, hair: "#27272a", glasses: true, skin: "#e8b695" },
+          { name: "Arfy", pos: "GOLD", ovr: 91, mic: 92, mac: 89, dpm: 5190, gpm: 815, kp: 72, srv: 88, hair: "#1c1917", glasses: false, skin: "#e2ab88" },
+          { name: "alekk", pos: "ROAM", ovr: 90, mic: 89, mac: 91, dpm: 1780, gpm: 490, kp: 82, srv: 88, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Cyruz", pos: "MID", isSub: true, ovr: 80, mic: 80, mac: 80, dpm: 3890, gpm: 595, kp: 68, srv: 79, hair: "#18181b", glasses: false, skin: "#e5af8c" },
+          { name: "Rinee", pos: "JGL", isSub: true, ovr: 80, mic: 81, mac: 79, dpm: 3480, gpm: 685, kp: 65, srv: 78, hair: "#171717", glasses: false, skin: "#e2ab88" }
+        ]
+      },
+      {
+        id: "srg-m7", name: "SELANGOR RED GIANTS", short: "SRG", edition: "M7", year: "2026", region: "MY",
+        primary: "#dc2626", secondary: "#facc15", accent: "#ffffff",
+        players: [
+          { name: "Kramm", pos: "EXP", ovr: 89, mic: 89, mac: 89, dpm: 3540, gpm: 645, kp: 70, srv: 87, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "Sekys", pos: "JGL", ovr: 91, mic: 93, mac: 89, dpm: 4260, gpm: 785, kp: 74, srv: 88, hair: "#1c1917", glasses: false, skin: "#e7b492" },
+          { name: "Stormie", pos: "MID", ovr: 90, mic: 90, mac: 90, dpm: 4860, gpm: 675, kp: 79, srv: 88, hair: "#27272a", glasses: true, skin: "#ecc0a1" },
+          { name: "Innocent", pos: "GOLD", ovr: 91, mic: 93, mac: 88, dpm: 5220, gpm: 815, kp: 72, srv: 88, hair: "#18181b", glasses: false, skin: "#e5af8c" },
+          { name: "Yums", pos: "ROAM", ovr: 89, mic: 88, mac: 90, dpm: 1790, gpm: 490, kp: 81, srv: 87, hair: "#262626", glasses: false, skin: "#e2ab88" },
+          { name: "Gojes", pos: "EXP", isSub: true, ovr: 80, mic: 80, mac: 80, dpm: 3080, gpm: 600, kp: 63, srv: 79, hair: "#171717", glasses: false, skin: "#dfa582" }
+        ]
+      },
+      {
+        id: "tlph-m7", name: "TEAM LIQUID PH", short: "TLPH", edition: "M7", year: "2026", region: "PH",
+        primary: "#0284c7", secondary: "#0f172a", accent: "#e0f2fe",
+        players: [
+          { name: "Sanford", pos: "EXP", ovr: 89, mic: 89, mac: 89, dpm: 3520, gpm: 645, kp: 70, srv: 87, hair: "#171717", glasses: false, skin: "#e5af8c" },
+          { name: "KarlTzy", pos: "JGL", ovr: 89, mic: 90, mac: 88, dpm: 4080, gpm: 760, kp: 73, srv: 86, hair: "#1c1917", glasses: false, skin: "#e5af8c" },
+          { name: "Sanji", pos: "MID", ovr: 88, mic: 88, mac: 88, dpm: 4620, gpm: 655, kp: 77, srv: 86, hair: "#18181b", glasses: true, skin: "#ecc0a1" },
+          { name: "Oheb", pos: "GOLD", ovr: 88, mic: 89, mac: 87, dpm: 4880, gpm: 785, kp: 70, srv: 86, hair: "#1c1917", glasses: false, skin: "#dba07c" },
+          { name: "Jaypee", pos: "ROAM", ovr: 88, mic: 86, mac: 90, dpm: 1680, gpm: 480, kp: 80, srv: 86, hair: "#262626", glasses: false, skin: "#e2ab88" }
+        ]
+      },
+      {
+        id: "onic-m7", name: "ONIC", short: "ONIC", edition: "M7", year: "2026", region: "ID",
+        primary: "#facc15", secondary: "#18181b", accent: "#ffffff",
+        players: [
+          { name: "Lutpiii", pos: "EXP", ovr: 87, mic: 87, mac: 87, dpm: 3410, gpm: 630, kp: 68, srv: 85, hair: "#171717", glasses: false, skin: "#e5af8c" },
+          { name: "Kairi", pos: "JGL", ovr: 88, mic: 90, mac: 86, dpm: 4060, gpm: 755, kp: 72, srv: 85, hair: "#18181b", glasses: false, skin: "#edc2a4" },
+          { name: "Sanz", pos: "MID", ovr: 88, mic: 88, mac: 88, dpm: 4640, gpm: 655, kp: 77, srv: 86, hair: "#292524", glasses: false, skin: "#e6b290" },
+          { name: "Savero", pos: "GOLD", ovr: 88, mic: 89, mac: 87, dpm: 4860, gpm: 785, kp: 70, srv: 86, hair: "#1c1917", glasses: false, skin: "#ecc0a1" },
+          { name: "Kiboy", pos: "ROAM", ovr: 88, mic: 87, mac: 89, dpm: 1690, gpm: 480, kp: 80, srv: 85, hair: "#171717", glasses: false, skin: "#dfa582" },
+          { name: "CW", pos: "GOLD", isSub: true, ovr: 81, mic: 82, mac: 80, dpm: 4140, gpm: 710, kp: 64, srv: 80, hair: "#1c1917", glasses: false, skin: "#ecc0a1" }
+        ]
+      },
+      {
+        id: "spirit-m7", name: "TEAM SPIRIT", short: "TS", edition: "M7", year: "2026", region: "EECA",
+        primary: "#06b6d4", secondary: "#0f172a", accent: "#cffafe",
+        players: [
+          { name: "Kid Bomba", pos: "EXP", ovr: 87, mic: 88, mac: 86, dpm: 3440, gpm: 635, kp: 69, srv: 85, hair: "#4a3728", glasses: false, skin: "#f4d2ba" },
+          { name: "ONESHOT", pos: "JGL", ovr: 87, mic: 89, mac: 85, dpm: 4020, gpm: 750, kp: 72, srv: 84, hair: "#3b2f2f", glasses: false, skin: "#f1ccb2" },
+          { name: "Sunset Lover", pos: "MID", ovr: 88, mic: 88, mac: 88, dpm: 4620, gpm: 655, kp: 76, srv: 86, hair: "#5c4033", glasses: true, skin: "#f5d5be" },
+          { name: "Hiko", pos: "GOLD", ovr: 87, mic: 88, mac: 86, dpm: 4780, gpm: 775, kp: 70, srv: 85, hair: "#2b211a", glasses: false, skin: "#f2cbb0" },
+          { name: "SAWO", pos: "ROAM", ovr: 88, mic: 86, mac: 90, dpm: 1680, gpm: 480, kp: 80, srv: 86, hair: "#3f2e21", glasses: false, skin: "#efd0b8" }
+        ]
+      },
+      {
+        id: "yg-m7", name: "YANGON GALACTICOS", short: "YG", edition: "M7", year: "2026", region: "MM",
+        primary: "#dc2626", secondary: "#111827", accent: "#fecaca",
+        players: [
+          { name: "Ying", pos: "EXP", ovr: 85, mic: 85, mac: 85, dpm: 3240, gpm: 620, kp: 67, srv: 83, hair: "#171717", glasses: false, skin: "#e5af8c" },
+          { name: "Hann", pos: "JGL", ovr: 86, mic: 87, mac: 85, dpm: 3910, gpm: 740, kp: 71, srv: 83, hair: "#18181b", glasses: false, skin: "#ecc0a1" },
+          { name: "Lina", pos: "MID", ovr: 85, mic: 85, mac: 85, dpm: 4380, gpm: 635, kp: 74, srv: 83, hair: "#262626", glasses: true, skin: "#e8b695" },
+          { name: "Stitch", pos: "GOLD", ovr: 86, mic: 87, mac: 85, dpm: 4640, gpm: 760, kp: 69, srv: 84, hair: "#1c1917", glasses: false, skin: "#dfa582" },
+          { name: "Blink", pos: "ROAM", ovr: 85, mic: 84, mac: 86, dpm: 1590, gpm: 465, kp: 77, srv: 83, hair: "#171717", glasses: false, skin: "#e2ab88" },
+          { name: "Beni", pos: "GOLD", isSub: true, ovr: 79, mic: 80, mac: 78, dpm: 4040, gpm: 700, kp: 63, srv: 78, hair: "#18181b", glasses: false, skin: "#e5af8c" }
+        ]
+      },
+      {
+        id: "auroratr-m7", name: "AURORA GAMING TR", short: "AUR", edition: "M7", year: "2026", region: "TR",
+        primary: "#06b6d4", secondary: "#0f172a", accent: "#cffafe",
+        players: [
+          { name: "Lunar", pos: "EXP", ovr: 85, mic: 85, mac: 85, dpm: 3260, gpm: 620, kp: 67, srv: 83, hair: "#3f2e21", glasses: false, skin: "#f2cbb0" },
+          { name: "Kazue", pos: "JGL", ovr: 86, mic: 87, mac: 85, dpm: 3920, gpm: 740, kp: 71, srv: 83, hair: "#292018", glasses: false, skin: "#efd0b8" },
+          { name: "Rosa", pos: "MID", ovr: 86, mic: 86, mac: 86, dpm: 4460, gpm: 640, kp: 75, srv: 84, hair: "#18181b", glasses: true, skin: "#f1ccb2" },
+          { name: "Sigibum", pos: "GOLD", ovr: 85, mic: 86, mac: 84, dpm: 4560, gpm: 755, kp: 68, srv: 83, hair: "#171717", glasses: false, skin: "#ecc0a1" },
+          { name: "APEX47", pos: "ROAM", ovr: 85, mic: 84, mac: 86, dpm: 1610, gpm: 470, kp: 78, srv: 83, hair: "#221c18", glasses: false, skin: "#e5af8c" }
+        ]
+      }
+    ];
+
+    // =========================================================================
+    // 2. ROLE COORDINATES ON LAND OF DAWN & SVG ROLE ICONS
+    // =========================================================================
+    const ROLES = ["EXP", "JGL", "MID", "GOLD", "ROAM"];
+
+    // Coordinates (% on 400x400 map) aligned with plannerNew1.png lanes & pits
+    const MAP_POSITIONS = {
+      blue: {
+        EXP:  { x: 11, y: 14 },
+        JGL:  { x: 26, y: 48 },
+        MID:  { x: 43, y: 57 },
+        GOLD: { x: 86, y: 89 },
+        ROAM: { x: 70, y: 90 }
+      },
+      red: {
+        EXP:  { x: 31, y: 9 },
+        JGL:  { x: 74, y: 38 },
+        MID:  { x: 57, y: 43 },
+        GOLD: { x: 89, y: 55 },
+        ROAM: { x: 89, y: 71 }
+      }
+    };
+
+    function getRoleIconSvg(pos, size = 14) {
+      const gold = "#facc15";
+      const gray = "#94a3b8";
+
+      if (pos === "GOLD") {
+        // MLBB Gold Lane emblem (Dollar/Gold S-rune + side chevrons)
+        return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none">
+          <polygon points="10,33 24,43 24,62 10,74" fill="${gray}" />
+          <polygon points="90,26 76,38 76,57 90,67" fill="${gray}" />
+          <path d="M43 4H57V15H89L75 28H26L76 58V72H57V96H43V84H11L25 71H74L24 41V28H43V4Z" fill="${gold}" />
+        </svg>`;
+      }
+      if (pos === "EXP") {
+        // MLBB EXP Lane emblem (Sigma E-rune + left arrow & right block)
+        return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none">
+          <polygon points="4,18 28,50 4,82" fill="${gold}" />
+          <polygon points="96,20 84,31 84,69 96,80" fill="${gray}" />
+          <path d="M12 6H92L79 20H37L54 42H73V58H54L37 80H79L92 94H12L40 50L12 6Z" fill="${gold}" />
+        </svg>`;
+      }
+      if (pos === "ROAM") {
+        // MLBB Roaming emblem (Dual interlocked Z-arrows)
+        return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none">
+          <path d="M16 8H80V22L36 66V50L64 22H30V38H44L16 66V8Z" fill="${gold}" />
+          <path d="M84 92H20V78L64 34V50L36 78H70V62H56L84 34V92Z" fill="${gold}" />
+        </svg>`;
+      }
+      if (pos === "JGL") {
+        // MLBB Jungler emblem (Corner brackets, quadrant arcs, and split yellow diamond core)
+        return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none">
+          <path d="M10 10H58V24H24V58H10V10Z" fill="${gray}" />
+          <path d="M90 90H42V76H76V42H90V90Z" fill="${gray}" />
+          <path d="M68 10H90V32C77.8 32 68 22.2 68 10Z" fill="${gray}" />
+          <path d="M32 90H10V68C22.2 68 32 77.8 32 90Z" fill="${gray}" />
+          <polygon points="31,31 63,31 31,63" fill="${gold}" />
+          <polygon points="69,69 37,69 69,37" fill="${gold}" />
+        </svg>`;
+      }
+      // MID (Diagonal yellow slash between upper-left & lower-right map brackets)
+      return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none">
+        <path d="M6 6H74L58 22H22V58L6 74V6Z" fill="${gray}" />
+        <polygon points="30,30 50,30 30,50" fill="${gray}" />
+        <path d="M94 94H26L42 78H78V42L94 26V94Z" fill="${gray}" />
+        <polygon points="70,70 50,70 70,50" fill="${gray}" />
+        <polygon points="82,6 94,6 94,18 18,94 6,94 6,82" fill="${gold}" />
+      </svg>`;
+    }
+
+    // Generate crisp custom SVG esports player portrait with team jersey & features
+    function getPlayerPortraitSvg(player, team) {
+      const seed = player.name.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+      const hairStyle = seed % 3;
+      const bgGradId = `bg_${team.id}_${player.name.replace(/\s+/g, '')}`;
+      return `
+        <svg viewBox="0 0 80 80" class="w-full h-full block">
+          <defs>
+            <radialGradient id="${bgGradId}" cx="50%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="${team.primary}" stop-opacity="0.55" />
+              <stop offset="100%" stop-color="#09111e" stop-opacity="1" />
+            </radialGradient>
+          </defs>
+          <rect width="80" height="80" fill="url(#${bgGradId})" />
+          <!-- Esports Jersey Shoulders -->
+          <path d="M 10 80 C 12 60, 24 55, 40 55 C 56 55, 68 60, 70 80 Z" fill="${team.secondary}" stroke="${team.primary}" stroke-width="2" />
+          <!-- Jersey V-Neck & Accent Stripes -->
+          <path d="M 30 56 L 40 68 L 50 56" fill="none" stroke="${team.primary}" stroke-width="3" />
+          <path d="M 19 64 L 25 80 M 61 64 L 55 80" stroke="${team.accent}" stroke-width="1.5" opacity="0.75" />
+          <!-- Neck -->
+          <rect x="34" y="45" width="12" height="13" rx="4" fill="${player.skin}" />
+          <!-- Face -->
+          <rect x="26" y="21" width="28" height="31" rx="13" fill="${player.skin}" />
+          <!-- Eyes -->
+          <circle cx="34" cy="36" r="2" fill="#111827" />
+          <circle cx="46" cy="36" r="2" fill="#111827" />
+          <!-- Focused Mouth -->
+          <path d="M 36 44 Q 40 46 44 44" stroke="#7c2d12" stroke-width="1.6" fill="none" stroke-linecap="round" />
+          <!-- Glasses if applicable -->
+          ${player.glasses ? `
+            <rect x="29" y="32" width="9" height="7" rx="1.5" fill="none" stroke="#e2e8f0" stroke-width="1.4" />
+            <rect x="42" y="32" width="9" height="7" rx="1.5" fill="none" stroke="#e2e8f0" stroke-width="1.4" />
+            <line x1="38" y1="35" x2="42" y2="35" stroke="#e2e8f0" stroke-width="1.4" />
+          ` : ""}
+          <!-- Hair Styles -->
+          ${hairStyle === 0 ? `
+            <path d="M 25 32 C 24 16, 56 16, 55 32 C 53 24, 45 22, 40 25 C 34 22, 27 24, 25 32 Z" fill="${player.hair}" />
+          ` : hairStyle === 1 ? `
+            <path d="M 25 33 C 23 15, 57 15, 55 33 C 51 22, 37 20, 29 27 Z" fill="${player.hair}" />
+          ` : `
+            <path d="M 25 31 C 25 14, 55 14, 55 31 C 50 25, 30 25, 25 31 Z" fill="${player.hair}" />
+          `}
+        </svg>
+      `;
+    }
+
+    // Generate crisp custom SVG esports team emblem
+    function getTeamLogoSvg(team, size = 44) {
+      return `
+        <svg width="${size}" height="${size}" viewBox="0 0 64 64" class="shrink-0 drop-shadow">
+          <polygon points="32,3 59,18 59,46 32,61 5,46 5,18" fill="${team.secondary}" stroke="${team.primary}" stroke-width="3.5" />
+          <polygon points="32,9 53,21 53,43 32,55 11,43 11,21" fill="none" stroke="${team.accent}" stroke-width="1.2" opacity="0.65" />
+          <text x="32" y="37" text-anchor="middle" fill="${team.accent}" font-family="Cinzel, serif" font-weight="800" font-size="14" letter-spacing="0.5">${team.short}</text>
+        </svg>
+      `;
+    }
+
+    // =========================================================================
+    // 3. GAME STATE & TOURNAMENT BRACKET CONFIGURATION
+    // =========================================================================
+    const BRACKET_NODES = {
+      GROUP: { label: "GROUP STAGE", bestOf: 1, winsNeeded: 1, nextWin: "UQ", nextLoss: "LQ1" },
+      UQ:    { label: "UPPER QUARTERFINALS", bestOf: 3, winsNeeded: 2, nextWin: "US", nextLoss: "LQ1" },
+      US:    { label: "UPPER SEMIFINALS", bestOf: 3, winsNeeded: 2, nextWin: "UF", nextLoss: "LQ2" },
+      UF:    { label: "UPPER FINALS", bestOf: 5, winsNeeded: 3, nextWin: "GF", nextLoss: "LF" },
+      LQ1:   { label: "LOWER ROUND 1", bestOf: 3, winsNeeded: 2, nextWin: "LQ2", nextLoss: "ELIMINATED" },
+      LQ2:   { label: "LOWER QUARTERFINALS", bestOf: 3, winsNeeded: 2, nextWin: "LS", nextLoss: "ELIMINATED" },
+      LS:    { label: "LOWER SEMIFINALS", bestOf: 3, winsNeeded: 2, nextWin: "LF", nextLoss: "ELIMINATED" },
+      LF:    { label: "LOWER FINALS", bestOf: 5, winsNeeded: 3, nextWin: "GF", nextLoss: "ELIMINATED" },
+      GF:    { label: "M-SERIES GRAND FINALS", bestOf: 7, winsNeeded: 4, nextWin: "CHAMPION", nextLoss: "ELIMINATED" }
+    };
+
+    let activeTimers = [];
+
+    function clearAllTimers() {
+      activeTimers.forEach(id => {
+        clearTimeout(id);
+        clearInterval(id);
+      });
+      activeTimers = [];
+    }
+
+    function getPlayerVersionKey(teamId, playerName) {
+      return `${teamId}::${playerName}`;
+    }
+
+    function createInitialState() {
+      return {
+        phase: "SPIN", // SPIN | SPINNING_TEAMS | PICK_TEAM | PICK_PLAYER | READY | STAGE_VS | KNOCKOUT | CHAMPION | ELIMINATED
+        round: 1,
+        rerolls: 3,
+        roster: { EXP: null, JGL: null, MID: null, GOLD: null, ROAM: null },
+        usedPlayerVersions: [],
+        offeredTeams: [],
+        spinSlots: [M_SERIES_TEAMS[0], M_SERIES_TEAMS[1], M_SERIES_TEAMS[2]],
+        spinLocked: [false, false, false],
+        selectedTeam: null,
+        bracketNode: "GROUP",
+        vsStageMode: "GROUP",
+        opponentRoster: {},
+        oppSpinningRoles: { EXP: false, JGL: false, MID: false, GOLD: false, ROAM: false },
+        oppLockedRoles: { EXP: false, JGL: false, MID: false, GOLD: false, ROAM: false },
+        groupMatchInProgress: false,
+        groupMatchResolved: false,
+        groupMatchWon: false,
+        liveBluePos: JSON.parse(JSON.stringify(MAP_POSITIONS.blue)),
+        liveRedPos: JSON.parse(JSON.stringify(MAP_POSITIONS.red)),
+        activeBlueRoles: [],
+        activeRedRoles: [],
+        mapEffect: null,
+        boSeries: {
+          bestOf: 3,
+          winsNeeded: 2,
+          userWins: 0,
+          enemyWins: 0,
+          currentGame: 1,
+          results: [],
+          events: [],
+          gameInProgress: false,
+          waitingNextMatch: false,
+          lastGameWon: null,
+          seriesClinched: false
+        },
+        tournamentHistory: [],
+        bracketRivals: [],
+        recapOpen: false,
+        expandedStages: {},
+        expandedGames: {},
+        copyToast: ""
+      };
+    }
+
+    let state = createInitialState();
+
+    function resetLiveMapPositions() {
+      state.liveBluePos = JSON.parse(JSON.stringify(MAP_POSITIONS.blue));
+      state.liveRedPos = JSON.parse(JSON.stringify(MAP_POSITIONS.red));
+      state.activeBlueRoles = [];
+      state.activeRedRoles = [];
+      state.mapEffect = null;
+    }
+
+    function resetGame() {
+      clearAllTimers();
+      state = createInitialState();
+      render();
+    }
+
+    function getEligibleTeamsForDraft() {
+      return M_SERIES_TEAMS.filter(team =>
+        team.players.some(p => !state.roster[p.pos])
+      );
+    }
+
+    function drawThreeRandomTeams(excludeIds = []) {
+      let pool = getEligibleTeamsForDraft().filter(t => !excludeIds.includes(t.id));
+      if (pool.length < 3) {
+        pool = getEligibleTeamsForDraft();
+      }
+      const shuffled = [...pool].sort(() => Math.random() - 0.5);
+      return shuffled.slice(0, 3);
+    }
+
+    function runTeamSpinAnimation(isReroll = false) {
+      if (isReroll) {
+        if (state.rerolls <= 0) return;
+        state.rerolls--;
+      }
+      clearAllTimers();
+
+      const prevIds = isReroll ? state.offeredTeams.map(t => t.id) : [];
+      const finalTeams = drawThreeRandomTeams(prevIds);
+      state.offeredTeams = finalTeams;
+      state.spinLocked = [false, false, false];
+      state.phase = "SPINNING_TEAMS";
+      render();
+
+      const allEligible = getEligibleTeamsForDraft();
+      const cycleInterval = setInterval(() => {
+        for (let i = 0; i < 3; i++) {
+          if (!state.spinLocked[i]) {
+            state.spinSlots[i] = allEligible[Math.floor(Math.random() * allEligible.length)];
+          }
+        }
+        render();
+      }, 75);
+      activeTimers.push(cycleInterval);
+
+      // Staggered lock-in deceleration for Slot 1, Slot 2, and Slot 3
+      [0, 1, 2].forEach(slotIdx => {
+        const lockDelay = 480 + slotIdx * 320;
+        const lockTimer = setTimeout(() => {
+          state.spinLocked[slotIdx] = true;
+          state.spinSlots[slotIdx] = finalTeams[slotIdx];
+          render();
+
+          if (slotIdx === 2) {
+            clearInterval(cycleInterval);
+            const finishTimer = setTimeout(() => {
+              state.phase = "PICK_TEAM";
+              render();
+            }, 240);
+            activeTimers.push(finishTimer);
+          }
+        }, lockDelay);
+        activeTimers.push(lockTimer);
+      });
+    }
+
+    function handleSpin() {
+      runTeamSpinAnimation(false);
+    }
+
+    function handleReroll() {
+      runTeamSpinAnimation(true);
+    }
+
+    function handleSelectTeam(teamId) {
+      const team = M_SERIES_TEAMS.find(t => t.id === teamId);
+      if (!team) return;
+      state.selectedTeam = team;
+      state.phase = "PICK_PLAYER";
+      render();
+    }
+
+    function handleSelectPlayer(playerName) {
+      const team = state.selectedTeam;
+      if (!team) return;
+      const player = team.players.find(p => p.name === playerName && !state.roster[p.pos]);
+      if (!player) return;
+
+      const versionKey = getPlayerVersionKey(team.id, player.name);
+      state.roster[player.pos] = { ...player, team, versionKey };
+      state.usedPlayerVersions.push(versionKey);
+
+      const draftedCount = ROLES.filter(r => state.roster[r]).length;
+      if (draftedCount >= 5) {
+        state.phase = "READY";
+      } else {
+        state.round = draftedCount + 1;
+        state.selectedTeam = null;
+        state.phase = "SPIN";
+      }
+      render();
+    }
+
+    // =========================================================================
+    // 4. TEAM POWER, SYNERGY & OPPONENT POOL HELPERS
+    // =========================================================================
+    function calculateTeamStats(roster) {
+      const drafted = ROLES.map(r => roster[r]).filter(Boolean);
+      if (drafted.length === 0) {
+        return { avgOvr: 0, synergyBonus: 0, totalPower: 0, synergies: [] };
+      }
+
+      const avgOvr = Math.round(drafted.reduce((sum, p) => sum + p.ovr, 0) / drafted.length);
+      const synergies = [];
+      let synergyBonus = 0;
+
+      // Count same-team, same-edition, and same-region connections
+      const teamCounts = {};
+      const editionCounts = {};
+      const regionCounts = {};
+
+      drafted.forEach(p => {
+        if (!p.team) return;
+        teamCounts[p.team.id] = (teamCounts[p.team.id] || 0) + 1;
+        editionCounts[p.team.edition] = (editionCounts[p.team.edition] || 0) + 1;
+        regionCounts[p.team.region] = (regionCounts[p.team.region] || 0) + 1;
+      });
+
+      Object.entries(teamCounts).forEach(([teamId, count]) => {
+        if (count >= 2) {
+          const teamObj = M_SERIES_TEAMS.find(t => t.id === teamId);
+          const bonus = count >= 4 ? 5 : count === 3 ? 3 : 2;
+          synergyBonus += bonus;
+          synergies.push({
+            label: `${teamObj ? teamObj.short : teamId} x${count} (+${bonus})`,
+            color: "bg-amber-950/90 text-amber-200 border-amber-400/60"
+          });
+        }
+      });
+
+      Object.entries(editionCounts).forEach(([edition, count]) => {
+        if (count >= 3) {
+          const bonus = count >= 5 ? 4 : 2;
+          synergyBonus += bonus;
+          synergies.push({
+            label: `${edition} Era x${count} (+${bonus})`,
+            color: "bg-sky-950/90 text-sky-200 border-sky-400/60"
+          });
+        }
+      });
+
+      Object.entries(regionCounts).forEach(([region, count]) => {
+        if (count >= 3) {
+          const bonus = count >= 5 ? 3 : 1;
+          synergyBonus += bonus;
+          synergies.push({
+            label: `${region} Pride x${count} (+${bonus})`,
+            color: "bg-emerald-950/90 text-emerald-200 border-emerald-400/60"
+          });
+        }
+      });
+
+      return {
+        avgOvr,
+        synergyBonus,
+        totalPower: avgOvr + synergyBonus,
+        synergies
+      };
+    }
+
+    function getAvailableOpponentPool(role) {
+      const userVersionKeys = new Set(
+        ROLES.map(r => state.roster[r] && state.roster[r].versionKey).filter(Boolean)
+      );
+
+      let pool = [];
+      M_SERIES_TEAMS.forEach(team => {
+        team.players.forEach(p => {
+          if (p.pos === role) {
+            const versionKey = getPlayerVersionKey(team.id, p.name);
+            if (!userVersionKeys.has(versionKey)) {
+              pool.push({ ...p, team, versionKey });
+            }
+          }
+        });
+      });
+
+      if (pool.length === 0) {
+        M_SERIES_TEAMS.forEach(team => {
+          team.players.forEach(p => {
+            if (p.pos === role) {
+              pool.push({ ...p, team, versionKey: getPlayerVersionKey(team.id, p.name) });
+            }
+          });
+        });
+      }
+
+      return pool;
+    }
+
+    function generateOpponentSquad(nodeKey = "GROUP") {
+      // Progressive difficulty configuration by tournament stage
+      const stageDifficulty = {
+        GROUP: { minOvr: 80, targetOvr: 86, statBoost: -1, chemChance: 0.15, chemCount: 2, topSlice: 14 },
+        UQ:    { minOvr: 84, targetOvr: 89, statBoost: 0,  chemChance: 0.35, chemCount: 2, topSlice: 10 },
+        LQ1:   { minOvr: 83, targetOvr: 88, statBoost: 0,  chemChance: 0.30, chemCount: 2, topSlice: 11 },
+        LQ2:   { minOvr: 85, targetOvr: 90, statBoost: 1,  chemChance: 0.45, chemCount: 2, topSlice: 9 },
+        US:    { minOvr: 87, targetOvr: 92, statBoost: 2,  chemChance: 0.65, chemCount: 3, topSlice: 7 },
+        LS:    { minOvr: 87, targetOvr: 92, statBoost: 2,  chemChance: 0.65, chemCount: 3, topSlice: 7 },
+        UF:    { minOvr: 89, targetOvr: 94, statBoost: 3,  chemChance: 0.80, chemCount: 3, topSlice: 5 },
+        LF:    { minOvr: 89, targetOvr: 94, statBoost: 3,  chemChance: 0.80, chemCount: 3, topSlice: 5 },
+        GF:    { minOvr: 91, targetOvr: 96, statBoost: 4,  chemChance: 0.95, chemCount: 4, topSlice: 4 }
+      };
+
+      const cfg = stageDifficulty[nodeKey] || stageDifficulty.UQ;
+      const isLateBracket = ["US", "LS", "UF", "LF", "GF"].includes(nodeKey);
+
+      // Check for a natural bracket rematch (e.g., team you beat earlier climbs Lower Bracket to meet you in Finals,
+      // or a team that beat you earlier meets you again for a revenge rematch)
+      const eligibleRivals = state.bracketRivals.filter(r => {
+        if (r.rematched) return false;
+        if (nodeKey === "GF") {
+          // Grand Finals rematch against a strong team beaten in Upper Semis/Finals or Group/Quarterfinals
+          return ["UF", "US", "UQ", "GROUP"].includes(r.metAt);
+        }
+        if (["LF", "LS", "LQ2"].includes(nodeKey)) {
+          // Lower bracket rematch against a team encountered earlier
+          return ["GROUP", "UQ", "US"].includes(r.metAt);
+        }
+        return false;
+      });
+
+      const rematchChance = nodeKey === "GF" ? 0.58 : (["LF", "LS"].includes(nodeKey) ? 0.38 : 0);
+      if (eligibleRivals.length > 0 && Math.random() < rematchChance) {
+        const chosenRival = eligibleRivals[eligibleRivals.length - 1];
+        chosenRival.rematched = true;
+        const upgradedRoster = {};
+        ROLES.forEach(role => {
+          const baseP = chosenRival.roster[role];
+          const boost = Math.max(1, cfg.statBoost);
+          upgradedRoster[role] = {
+            ...baseP,
+            ovr: Math.min(98, baseP.ovr + boost),
+            mic: Math.min(99, baseP.mic + boost),
+            mac: Math.min(99, baseP.mac + boost),
+            kp: Math.min(95, baseP.kp + Math.ceil(boost / 2)),
+            srv: Math.min(98, baseP.srv + boost)
+          };
+        });
+        return {
+          roster: upgradedRoster,
+          tag: chosenRival.userWon ? `REMATCH (${chosenRival.metLabel})` : `REVENGE MATCH (${chosenRival.metLabel})`
+        };
+      }
+
+      const oppRoster = {};
+      const pickedVersionsThisSquad = new Set();
+
+      // Decide if enemy activates Team/Era/Region chemistry synergy
+      let anchorTeam = null;
+      let anchorEdition = null;
+      if (Math.random() < cfg.chemChance) {
+        const strongTeams = M_SERIES_TEAMS.filter(t => {
+          const avg = t.players.filter(p => !p.isSub).reduce((s, p) => s + p.ovr, 0) / 5;
+          return avg >= cfg.minOvr;
+        });
+        const candidateTeams = strongTeams.length > 0 ? strongTeams : M_SERIES_TEAMS;
+        anchorTeam = candidateTeams[Math.floor(Math.random() * candidateTeams.length)];
+        anchorEdition = anchorTeam.edition;
+      }
+
+      // Shuffle roles so chemistry anchors pick random roles across the 5 positions
+      const shuffledRoles = [...ROLES].sort(() => Math.random() - 0.5);
+      const chemRoles = new Set(shuffledRoles.slice(0, anchorTeam ? cfg.chemCount : 0));
+
+      ROLES.forEach(role => {
+        let pool = getAvailableOpponentPool(role).filter(p => !pickedVersionsThisSquad.has(p.versionKey));
+
+        // Prefer chemistry teammates or same-era stars if selected for this role
+        if (chemRoles.has(role) && anchorTeam) {
+          const sameTeam = pool.filter(p => p.team.id === anchorTeam.id);
+          const sameEdition = pool.filter(p => p.team.edition === anchorEdition && p.ovr >= cfg.minOvr);
+          if (sameTeam.length > 0) {
+            pool = sameTeam;
+          } else if (sameEdition.length > 0) {
+            pool = sameEdition;
+          }
+        } else {
+          // Filter toward higher-rated players as rounds progress
+          const highRated = pool.filter(p => p.ovr >= cfg.minOvr);
+          if (highRated.length >= 3) {
+            pool = highRated;
+          }
+          pool.sort((a, b) => Math.abs(b.ovr - cfg.targetOvr) - Math.abs(a.ovr - cfg.targetOvr));
+        }
+
+        const candidateSlice = pool.slice(0, Math.min(cfg.topSlice, pool.length));
+        const pick = candidateSlice[Math.floor(Math.random() * candidateSlice.length)];
+        pickedVersionsThisSquad.add(pick.versionKey);
+        state.usedPlayerVersions.push(pick.versionKey);
+
+        const boost = cfg.statBoost;
+        oppRoster[role] = {
+          ...pick,
+          ovr: Math.min(98, Math.max(80, pick.ovr + boost)),
+          mic: Math.min(99, Math.max(78, pick.mic + boost)),
+          mac: Math.min(99, Math.max(78, pick.mac + boost)),
+          kp: Math.min(95, Math.max(65, pick.kp + (boost > 0 ? Math.ceil(boost / 2) : 0))),
+          srv: Math.min(98, Math.max(78, pick.srv + boost))
+        };
+      });
+
+      const oppStats = calculateTeamStats(oppRoster);
+      let tag = nodeKey === "GROUP" ? "GROUP RIVAL" : "CHALLENGER";
+      if (nodeKey === "GF") tag = "GRAND FINALIST";
+      else if (["UF", "LF"].includes(nodeKey)) tag = "FINALIST CONTENDER";
+      else if (["US", "LS"].includes(nodeKey)) tag = "SEMIFINALIST";
+      else if (oppStats.synergies.length > 0 && isLateBracket) tag = "SYNERGY SQUAD";
+
+      return { roster: oppRoster, tag };
+    }
+
+    // =========================================================================
+    // 5. TOURNAMENT STAGES & 3 DECIDING EVENTS ENGINE (WITH MAP MOVEMENT)
+    // =========================================================================
+    function presentOpponentRandomizerScreen(nodeKey) {
+      clearAllTimers();
+      state.vsStageMode = nodeKey;
+      state.bracketNode = nodeKey;
+      state.phase = "STAGE_VS";
+      state.groupMatchInProgress = false;
+      state.groupMatchResolved = false;
+      state.groupMatchWon = false;
+
+      const generated = generateOpponentSquad(nodeKey);
+      const targetOpponent = generated.roster;
+      state.opponentTag = generated.tag;
+
+      state.opponentRoster = {};
+      ROLES.forEach(role => {
+        state.oppSpinningRoles[role] = true;
+        state.oppLockedRoles[role] = false;
+        const pool = getAvailableOpponentPool(role);
+        const randPick = pool[Math.floor(Math.random() * pool.length)];
+        state.opponentRoster[role] = randPick;
+      });
+      render();
+
+      const vsCycle = setInterval(() => {
+        ROLES.forEach(role => {
+          if (state.oppSpinningRoles[role]) {
+            const pool = getAvailableOpponentPool(role);
+            const randPick = pool[Math.floor(Math.random() * pool.length)];
+            state.opponentRoster[role] = randPick;
+          }
+        });
+        render();
+      }, 85);
+      activeTimers.push(vsCycle);
+
+      ROLES.forEach((role, idx) => {
+        const lockDelay = 420 + idx * 260;
+        const t = setTimeout(() => {
+          state.oppSpinningRoles[role] = false;
+          state.oppLockedRoles[role] = true;
+          state.opponentRoster[role] = targetOpponent[role];
+          render();
+
+          if (idx === ROLES.length - 1) {
+            clearInterval(vsCycle);
+            const settleTimer = setTimeout(() => {
+              ROLES.forEach(r => { state.oppLockedRoles[r] = false; });
+              render();
+            }, 320);
+            activeTimers.push(settleTimer);
+          }
+        }, lockDelay);
+        activeTimers.push(t);
+      });
+    }
+
+    function startTournament() {
+      presentOpponentRandomizerScreen("GROUP");
+    }
+
+    function handleStartVsMatch() {
+      if (Object.values(state.oppSpinningRoles).some(Boolean)) return;
+
+      if (state.vsStageMode === "GROUP") {
+        if (state.groupMatchInProgress || state.groupMatchResolved) return;
+        state.groupMatchInProgress = true;
+        render();
+
+        const qualTimer = setTimeout(() => {
+          if (state.phase !== "STAGE_VS" || state.vsStageMode !== "GROUP") return;
+          const userStats = calculateTeamStats(state.roster);
+          const oppStats = calculateTeamStats(state.opponentRoster);
+          const winProb = 0.62 + (userStats.totalPower - oppStats.totalPower) * 0.015;
+          const won = Math.random() < Math.max(0.35, Math.min(0.92, winProb));
+
+          state.groupMatchInProgress = false;
+          state.groupMatchResolved = true;
+          state.groupMatchWon = won;
+
+          state.bracketRivals.push({
+            metAt: "GROUP",
+            metLabel: "GROUP STAGE",
+            roster: JSON.parse(JSON.stringify(state.opponentRoster)),
+            userWon: won,
+            rematched: false
+          });
+
+          state.tournamentHistory.push({
+            id: "GROUP",
+            label: "GROUP STAGE",
+            opponentRoster: JSON.parse(JSON.stringify(state.opponentRoster)),
+            games: [
+              {
+                gameNum: 1,
+                won,
+                events: [
+                  {
+                    win: won,
+                    text: won
+                      ? `${state.roster.MID.name} & ${state.roster.JGL.name} control mid-river tempo and qualify for Upper Bracket`
+                      : `${state.opponentRoster.JGL.name} steals Enhanced Lord, sending your team to Lower Bracket`
+                  }
+                ]
+              }
+            ]
+          });
+
+          render();
+        }, 1750);
+        activeTimers.push(qualTimer);
+      } else {
+        launchDoubleEliminationSeriesAfterVs();
+      }
+    }
+
+    function proceedFromGroupStage() {
+      const firstNode = state.groupMatchWon ? "UQ" : "LQ1";
+      presentOpponentRandomizerScreen(firstNode);
+    }
+
+    function launchDoubleEliminationSeriesAfterVs() {
+      clearAllTimers();
+      state.phase = "KNOCKOUT";
+      resetLiveMapPositions();
+
+      const nodeConfig = BRACKET_NODES[state.bracketNode];
+      const bestOf = nodeConfig.bestOf;
+      const winsNeeded = nodeConfig.winsNeeded;
+
+      if (!state.tournamentHistory.some(s => s.id === state.bracketNode)) {
+        state.tournamentHistory.push({
+          id: state.bracketNode,
+          label: nodeConfig.label,
+          opponentRoster: JSON.parse(JSON.stringify(state.opponentRoster)),
+          games: []
+        });
+      }
+
+      state.boSeries = {
+        bestOf,
+        winsNeeded,
+        userWins: 0,
+        enemyWins: 0,
+        currentGame: 1,
+        results: [],
+        events: [],
+        gameInProgress: true,
+        waitingNextMatch: false,
+        lastGameWon: null,
+        seriesClinched: false
+      };
+
+      render();
+      playCurrentSeriesGame();
+    }
+
+    // Generate 3 chronological Deciding Events following true MLBB match progression:
+    // Event 1: Early Game (Laning Duels, Outer Turrets, Macro Ganks, Turtle)
+    // Event 2: Mid Game (Macro Rotations, Inner Turrets, Triple Kills, First Lord & Steals)
+    // Event 3: Late Game Finale (5v5 Wipe Outs, Enhanced Lord, Rarer Maniac/Savage, Crystal Destruction)
+    function buildThreeDecidingEvents(userRoster, oppRoster, userStats, oppStats) {
+      const u = userRoster;
+      const e = oppRoster;
+
+      // PHASE 1: EARLY GAME
+      const earlyEventPool = [
+        {
+          weight: 28,
+          callout: "TURRET DOWN!",
+          shake: false,
+          focusPos: { x: 89, y: 62 },
+          statDiff: (u.GOLD.mic + u.GOLD.dpm / 100) - (e.GOLD.mic + e.GOLD.dpm / 100),
+          winText: `${u.GOLD.name} wins Gold Lane trades and destroys the outer turret`,
+          lossText: `${e.GOLD.name} pressures Gold Lane and takes down your outer turret`,
+          blueMoves: { GOLD: { x: 89, y: 66 }, ROAM: { x: 82, y: 72 } },
+          redMoves:  { GOLD: { x: 89, y: 56 }, ROAM: { x: 83, y: 60 } },
+          activeBlue: ["GOLD", "ROAM"],
+          activeRed: ["GOLD", "ROAM"]
+        },
+        {
+          weight: 24,
+          callout: "FIRST BLOOD!",
+          shake: true,
+          focusPos: { x: 30, y: 10 },
+          statDiff: (u.EXP.mic + u.EXP.srv) - (e.EXP.mic + e.EXP.srv),
+          winText: `${u.EXP.name} wins the 1v1 EXP Lane solo kill for First Blood`,
+          lossText: `${e.EXP.name} outplays ${u.EXP.name} in EXP Lane for First Blood`,
+          blueMoves: { EXP: { x: 26, y: 9 } },
+          redMoves:  { EXP: { x: 34, y: 9 } },
+          activeBlue: ["EXP"],
+          activeRed: ["EXP"]
+        },
+        {
+          weight: 30,
+          callout: "MACRO GANK!",
+          shake: true,
+          focusPos: { x: 83, y: 68 },
+          statDiff: (u.ROAM.mac + u.MID.mac + u.JGL.mac) - (e.ROAM.mac + e.MID.mac + e.JGL.mac),
+          winText: `MACRO GANK! ${u.ROAM.name} & ${u.MID.name} rotate Gold Lane for a clean 3-man gank`,
+          lossText: `MACRO GANK! ${e.ROAM.name} & ${e.MID.name} read your rotation and gank ${u.GOLD.name}`,
+          blueMoves: { ROAM: { x: 80, y: 76 }, MID: { x: 76, y: 72 }, GOLD: { x: 88, y: 74 } },
+          redMoves:  { ROAM: { x: 82, y: 64 }, MID: { x: 78, y: 60 }, GOLD: { x: 88, y: 62 } },
+          activeBlue: ["ROAM", "MID", "GOLD"],
+          activeRed: ["ROAM", "MID"]
+        },
+        {
+          weight: 22,
+          callout: "TURTLE SLAIN!",
+          shake: false,
+          focusPos: { x: 69, y: 68 },
+          statDiff: (u.JGL.gpm / 10 + u.ROAM.mac) - (e.JGL.gpm / 10 + e.ROAM.mac),
+          winText: `${u.JGL.name} zones the river and secures the first Turtle objective`,
+          lossText: `${e.JGL.name} controls river bush vision and claims the first Turtle`,
+          blueMoves: { JGL: { x: 66, y: 68 }, ROAM: { x: 60, y: 74 }, MID: { x: 56, y: 64 } },
+          redMoves:  { JGL: { x: 72, y: 62 }, ROAM: { x: 76, y: 68 }, MID: { x: 64, y: 56 } },
+          activeBlue: ["JGL", "ROAM"],
+          activeRed: ["JGL", "ROAM"]
+        },
+        {
+          weight: 14,
+          callout: "TURTLE STEAL!",
+          shake: true,
+          focusPos: { x: 69, y: 68 },
+          statDiff: (u.JGL.mic + u.ROAM.mac) - (e.JGL.mic + e.ROAM.mac),
+          winText: `TURTLE STEAL! ${u.JGL.name} dashes into the pit and steals Turtle with Retribution!`,
+          lossText: `TURTLE STEAL! ${e.JGL.name} out-smites ${u.JGL.name} to steal the Turtle!`,
+          blueMoves: { JGL: { x: 68, y: 68 }, ROAM: { x: 62, y: 72 } },
+          redMoves:  { JGL: { x: 70, y: 66 }, ROAM: { x: 75, y: 70 } },
+          activeBlue: ["JGL"],
+          activeRed: ["JGL"]
+        }
+      ];
+
+      // PHASE 2: MID GAME
+      const midEventPool = [
+        {
+          weight: 32,
+          callout: "INNER TURRET!",
+          shake: false,
+          focusPos: { x: 52, y: 12 },
+          statDiff: (u.MID.mac + u.ROAM.mac + u.JGL.mac) - (e.MID.mac + e.ROAM.mac + e.JGL.mac),
+          winText: `MACRO ROTATION! ${u.ROAM.name} & ${u.JGL.name} gank EXP Lane and take the inner turret`,
+          lossText: `MACRO ROTATION! ${e.ROAM.name} & ${e.JGL.name} collapse on ${u.EXP.name} and break inner turret`,
+          blueMoves: { EXP: { x: 48, y: 9 }, JGL: { x: 44, y: 16 }, ROAM: { x: 52, y: 15 } },
+          redMoves:  { EXP: { x: 56, y: 9 }, JGL: { x: 60, y: 16 } },
+          activeBlue: ["ROAM", "JGL", "EXP"],
+          activeRed: ["ROAM", "JGL"]
+        },
+        {
+          weight: 28,
+          callout: "SETTER ENGAGE!",
+          shake: true,
+          focusPos: { x: 56, y: 44 },
+          statDiff: (u.ROAM.kp + u.ROAM.mac) - (e.ROAM.kp + e.ROAM.mac),
+          winText: `${u.ROAM.name} lands a decisive setter initiation to break Mid inner turret`,
+          lossText: `A risky mid-lane engage by ${u.ROAM.name} gets counter-initiated`,
+          blueMoves: { ROAM: { x: 56, y: 44 }, MID: { x: 50, y: 50 }, JGL: { x: 46, y: 42 } },
+          redMoves:  { ROAM: { x: 64, y: 36 }, MID: { x: 60, y: 40 }, GOLD: { x: 68, y: 32 } },
+          activeBlue: ["ROAM", "MID"],
+          activeRed: ["ROAM", "MID"]
+        },
+        {
+          weight: 20,
+          callout: "TRIPLE KILL!",
+          shake: true,
+          focusPos: { x: 58, y: 44 },
+          statDiff: (u.MID.mic + u.GOLD.mic) - (e.MID.mic + e.GOLD.mic),
+          winText: `TRIPLE KILL! ${u.MID.name} cleans up the mid-river skirmish and pushes Mid`,
+          lossText: `TRIPLE KILL! ${e.MID.name} punishes an overextension in Mid river`,
+          blueMoves: { MID: { x: 54, y: 46 }, GOLD: { x: 60, y: 52 }, ROAM: { x: 52, y: 54 } },
+          redMoves:  { MID: { x: 62, y: 38 }, GOLD: { x: 66, y: 42 } },
+          activeBlue: ["MID", "GOLD"],
+          activeRed: ["MID", "GOLD"]
+        },
+        {
+          weight: 24,
+          callout: "LORD MARCH!",
+          shake: true,
+          focusPos: { x: 32, y: 31 },
+          statDiff: (u.JGL.mac + u.ROAM.mac) - (e.JGL.mac + e.ROAM.mac),
+          winText: `${u.JGL.name} secures the first Lord and breaks the Mid inhibitor turret`,
+          lossText: `${e.JGL.name} claims the first Lord and takes down your Mid inhibitor`,
+          blueMoves: { JGL: { x: 31, y: 31 }, EXP: { x: 25, y: 22 }, ROAM: { x: 37, y: 35 }, MID: { x: 42, y: 40 } },
+          redMoves:  { JGL: { x: 38, y: 26 }, EXP: { x: 34, y: 18 }, MID: { x: 46, y: 32 } },
+          activeBlue: ["JGL", "ROAM"],
+          activeRed: ["JGL"]
+        },
+        {
+          weight: 14,
+          callout: "LORD STEAL!",
+          shake: true,
+          focusPos: { x: 31, y: 31 },
+          statDiff: (u.JGL.mic + u.ROAM.mac) - (e.JGL.mic + e.ROAM.mac),
+          winText: `LORD STEAL! ${u.JGL.name} steals the Lord at 500 HP and turns the tempo!`,
+          lossText: `LORD STEAL! ${e.JGL.name} sneaks into the pit and steals the Lord!`,
+          blueMoves: { JGL: { x: 31, y: 31 }, ROAM: { x: 36, y: 36 } },
+          redMoves:  { JGL: { x: 33, y: 29 }, ROAM: { x: 39, y: 25 } },
+          activeBlue: ["JGL"],
+          activeRed: ["JGL"]
+        }
+      ];
+
+      // PHASE 3: LATE GAME FINALE
+      const lateEventPool = [
+        {
+          weight: 42,
+          isCrystalFinale: true,
+          callout: "WIPE OUT!",
+          shake: true,
+          focusPos: { x: 82, y: 20 },
+          statDiff: (userStats.totalPower - oppStats.totalPower),
+          winText: `WIPE OUT! Your squad wins the 5v5 teamfight and shatters the enemy Crystal!`,
+          lossText: `WIPE OUT! The enemy squad wins the final 5v5 clash and shatters your Crystal!`,
+          blueMoves: { EXP: { x: 76, y: 20 }, JGL: { x: 80, y: 24 }, MID: { x: 74, y: 28 }, GOLD: { x: 82, y: 30 }, ROAM: { x: 72, y: 22 } },
+          redMoves:  { EXP: { x: 84, y: 16 }, JGL: { x: 86, y: 20 }, MID: { x: 82, y: 22 }, GOLD: { x: 88, y: 24 }, ROAM: { x: 80, y: 18 } },
+          activeBlue: ["EXP", "JGL", "MID", "GOLD", "ROAM"],
+          activeRed: ["EXP", "JGL", "MID", "GOLD", "ROAM"]
+        },
+        {
+          weight: 38,
+          isCrystalFinale: true,
+          callout: "ENHANCED LORD!",
+          shake: true,
+          focusPos: { x: 82, y: 20 },
+          statDiff: (u.JGL.mac + u.ROAM.mac + userStats.totalPower * 0.5) - (e.JGL.mac + e.ROAM.mac + oppStats.totalPower * 0.5),
+          winText: `${u.JGL.name} secures the Enhanced Lord and marches straight to destroy the Crystal!`,
+          lossText: `${e.JGL.name} marches with the Enhanced Lord and destroys your Crystal!`,
+          blueMoves: { EXP: { x: 74, y: 22 }, JGL: { x: 78, y: 26 }, MID: { x: 72, y: 30 }, GOLD: { x: 80, y: 32 }, ROAM: { x: 70, y: 24 } },
+          redMoves:  { EXP: { x: 84, y: 16 }, JGL: { x: 86, y: 20 }, MID: { x: 82, y: 22 }, GOLD: { x: 88, y: 24 }, ROAM: { x: 80, y: 18 } },
+          activeBlue: ["JGL", "GOLD", "ROAM"],
+          activeRed: ["JGL", "MID"]
+        },
+        {
+          weight: 13,
+          isCrystalFinale: true,
+          callout: "MANIAC!",
+          shake: true,
+          focusPos: { x: 83, y: 21 },
+          statDiff: (u.GOLD.mic + u.MID.mic + userStats.totalPower * 0.4) - (e.GOLD.mic + e.MID.mic + oppStats.totalPower * 0.4),
+          winText: `MANIAC! ${u.GOLD.name} pops off in the base siege and shatters the Crystal!`,
+          lossText: `MANIAC! ${e.GOLD.name} wipes four in the base defense and shatters your Crystal!`,
+          blueMoves: { EXP: { x: 75, y: 21 }, JGL: { x: 79, y: 25 }, MID: { x: 73, y: 29 }, GOLD: { x: 83, y: 29 }, ROAM: { x: 71, y: 23 } },
+          redMoves:  { EXP: { x: 84, y: 16 }, JGL: { x: 86, y: 20 }, MID: { x: 82, y: 22 }, GOLD: { x: 88, y: 24 }, ROAM: { x: 80, y: 18 } },
+          activeBlue: ["GOLD", "ROAM"],
+          activeRed: ["GOLD", "ROAM"]
+        },
+        {
+          weight: 7,
+          isCrystalFinale: true,
+          callout: "SAVAGE!",
+          shake: true,
+          focusPos: { x: 84, y: 20 },
+          statDiff: (u.GOLD.mic + u.JGL.mic + userStats.totalPower * 0.4) - (e.GOLD.mic + e.JGL.mic + oppStats.totalPower * 0.4),
+          winText: `LEGENDARY SAVAGE! ${u.GOLD.name} claims all 5 kills and destroys the Crystal!`,
+          lossText: `LEGENDARY SAVAGE! ${e.GOLD.name} wipes all 5 members and destroys your Crystal!`,
+          blueMoves: { EXP: { x: 76, y: 20 }, JGL: { x: 80, y: 24 }, MID: { x: 74, y: 28 }, GOLD: { x: 84, y: 28 }, ROAM: { x: 72, y: 22 } },
+          redMoves:  { EXP: { x: 84, y: 16 }, JGL: { x: 86, y: 20 }, MID: { x: 82, y: 22 }, GOLD: { x: 88, y: 24 }, ROAM: { x: 80, y: 18 } },
+          activeBlue: ["GOLD"],
+          activeRed: ["GOLD"]
+        }
+      ];
+
+      function pickWeightedEvent(pool) {
+        const totalWeight = pool.reduce((sum, item) => sum + (item.weight || 10), 0);
+        let roll = Math.random() * totalWeight;
+        for (const item of pool) {
+          roll -= (item.weight || 10);
+          if (roll <= 0) return item;
+        }
+        return pool[0];
+      }
+
+      const orderedTemplates = [
+        pickWeightedEvent(earlyEventPool),
+        pickWeightedEvent(midEventPool),
+        pickWeightedEvent(lateEventPool)
+      ];
+
+      return orderedTemplates.map(tpl => {
+        const prob = 0.52 + tpl.statDiff * 0.014 + (userStats.totalPower - oppStats.totalPower) * 0.006;
+        const clampedProb = Math.max(0.22, Math.min(0.84, prob));
+        const isWin = Math.random() < clampedProb;
+        return {
+          win: isWin,
+          isCrystalFinale: Boolean(tpl.isCrystalFinale),
+          callout: tpl.callout || (isWin ? "ADVANTAGE!" : "AMBUSHED!"),
+          shake: Boolean(tpl.shake),
+          focusPos: tpl.focusPos || { x: 50, y: 50 },
+          text: isWin ? tpl.winText : tpl.lossText,
+          blueMoves: tpl.blueMoves,
+          redMoves: tpl.redMoves,
+          activeBlue: tpl.activeBlue,
+          activeRed: tpl.activeRed
+        };
+      });
+    }
+
+    function applyEventMapMovement(ev) {
+      const nextBlue = JSON.parse(JSON.stringify(MAP_POSITIONS.blue));
+      const nextRed = JSON.parse(JSON.stringify(MAP_POSITIONS.red));
+
+      // Mirror coordinates to Blue Crystal (bottom-left) if enemy wins a late-game base siege
+      const invertBaseSiege = ev.isCrystalFinale && !ev.win;
+
+      if (ev.blueMoves) {
+        Object.entries(ev.blueMoves).forEach(([role, coords]) => {
+          const baseX = invertBaseSiege ? (100 - coords.x) : coords.x;
+          const baseY = invertBaseSiege ? (100 - coords.y) : coords.y;
+          const shiftX = ev.win ? 3 : -3;
+          const shiftY = ev.win ? -3 : 3;
+          nextBlue[role] = {
+            x: Math.min(90, Math.max(10, baseX + shiftX)),
+            y: Math.min(90, Math.max(10, baseY + shiftY))
+          };
+        });
+      }
+
+      if (ev.redMoves) {
+        Object.entries(ev.redMoves).forEach(([role, coords]) => {
+          const baseX = invertBaseSiege ? (100 - coords.x) : coords.x;
+          const baseY = invertBaseSiege ? (100 - coords.y) : coords.y;
+          const shiftX = ev.win ? 3 : -3;
+          const shiftY = ev.win ? -3 : 3;
+          nextRed[role] = {
+            x: Math.min(90, Math.max(10, baseX + shiftX)),
+            y: Math.min(90, Math.max(10, baseY + shiftY))
+          };
+        });
+      }
+
+      state.liveBluePos = nextBlue;
+      state.liveRedPos = nextRed;
+      state.activeBlueRoles = ev.activeBlue || [];
+      state.activeRedRoles = ev.activeRed || [];
+
+      const rawFocus = ev.focusPos || { x: 50, y: 50 };
+      const focusX = invertBaseSiege ? (100 - rawFocus.x) : rawFocus.x;
+      const focusY = invertBaseSiege ? (100 - rawFocus.y) : rawFocus.y;
+
+      state.mapEffect = {
+        id: Date.now() + Math.random(),
+        x: Math.min(84, Math.max(16, focusX)),
+        y: Math.min(84, Math.max(16, focusY)),
+        win: ev.win,
+        callout: ev.callout,
+        shake: ev.shake
+      };
+
+      if (ev.shake) {
+        const arenaBox = document.getElementById("mapArenaBox");
+        if (arenaBox) {
+          arenaBox.classList.remove("map-shake-heavy");
+          void arenaBox.offsetWidth;
+          arenaBox.classList.add("map-shake-heavy");
+        }
+      }
+    }
+
+    function playCurrentSeriesGame() {
+      if (state.phase !== "KNOCKOUT") return;
+      const userStats = calculateTeamStats(state.roster);
+      const oppStats = calculateTeamStats(state.opponentRoster);
+      const threeEvents = buildThreeDecidingEvents(state.roster, state.opponentRoster, userStats, oppStats);
+
+      resetLiveMapPositions();
+      state.boSeries.events = [];
+      state.boSeries.gameInProgress = true;
+      state.boSeries.waitingNextMatch = false;
+      render();
+
+      const eventIntervalMs = 2350;
+      const initialLeadMs = 1100;
+
+      threeEvents.forEach((ev, idx) => {
+        const evTimer = setTimeout(() => {
+          if (state.phase !== "KNOCKOUT") return;
+          state.boSeries.events.push(ev);
+          applyEventMapMovement(ev);
+          render();
+
+          if (idx === 2) {
+            const settleTimer = setTimeout(() => {
+              if (state.phase !== "KNOCKOUT") return;
+              const finaleEvent = threeEvents[2];
+              const gameWon = finaleEvent.isCrystalFinale
+                ? finaleEvent.win
+                : threeEvents.filter(e => e.win).length >= 2;
+
+              state.boSeries.results.push(gameWon ? "W" : "L");
+              if (gameWon) state.boSeries.userWins++;
+              else state.boSeries.enemyWins++;
+
+              const stageEntry = state.tournamentHistory.find(s => s.id === state.bracketNode);
+              if (stageEntry) {
+                stageEntry.games.push({
+                  gameNum: state.boSeries.currentGame,
+                  won: gameWon,
+                  events: threeEvents.map(e => ({ win: e.win, text: e.text }))
+                });
+              }
+
+              state.boSeries.lastGameWon = gameWon;
+              state.boSeries.gameInProgress = false;
+              state.boSeries.waitingNextMatch = true;
+              state.boSeries.seriesClinched =
+                state.boSeries.userWins >= state.boSeries.winsNeeded ||
+                state.boSeries.enemyWins >= state.boSeries.winsNeeded;
+
+              if (state.boSeries.seriesClinched) {
+                const nodeCfg = BRACKET_NODES[state.bracketNode];
+                const seriesWon = state.boSeries.userWins >= state.boSeries.winsNeeded;
+                state.bracketRivals.push({
+                  metAt: state.bracketNode,
+                  metLabel: nodeCfg.label,
+                  roster: JSON.parse(JSON.stringify(state.opponentRoster)),
+                  userWon: seriesWon,
+                  rematched: false
+                });
+              }
+
+              state.activeBlueRoles = [];
+              state.activeRedRoles = [];
+              state.mapEffect = null;
+              render();
+            }, 1750);
+            activeTimers.push(settleTimer);
+          }
+        }, initialLeadMs + idx * eventIntervalMs);
+        activeTimers.push(evTimer);
+      });
+    }
+
+    function handleNextMatch() {
+      if (!state.boSeries.waitingNextMatch) return;
+
+      const nodeConfig = BRACKET_NODES[state.bracketNode];
+
+      if (state.boSeries.userWins >= state.boSeries.winsNeeded) {
+        const nextTarget = nodeConfig.nextWin;
+        if (nextTarget === "CHAMPION") {
+          state.phase = "CHAMPION";
+          state.recapOpen = false;
+          resetLiveMapPositions();
+          render();
+        } else {
+          presentOpponentRandomizerScreen(nextTarget);
+        }
+        return;
+      }
+
+      if (state.boSeries.enemyWins >= state.boSeries.winsNeeded) {
+        const nextTarget = nodeConfig.nextLoss;
+        if (nextTarget === "ELIMINATED") {
+          state.phase = "ELIMINATED";
+          state.recapOpen = false;
+          resetLiveMapPositions();
+          render();
+        } else {
+          presentOpponentRandomizerScreen(nextTarget);
+        }
+        return;
+      }
+
+      state.boSeries.currentGame++;
+      playCurrentSeriesGame();
+    }
+
+    // =========================================================================
+    // 6. TOURNAMENT RECAP ACCORDION & SHARE HELPERS
+    // =========================================================================
+    function toggleRecapDrawer() {
+      state.recapOpen = !state.recapOpen;
+      render();
+    }
+
+    function toggleRecapStage(stageId) {
+      state.expandedStages[stageId] = !state.expandedStages[stageId];
+      render();
+    }
+
+    function toggleRecapGame(gameKey) {
+      state.expandedGames[gameKey] = !state.expandedGames[gameKey];
+      render();
+    }
+
+    function copyRecapSummary() {
+      const isChamp = state.phase === "CHAMPION";
+      const nodeLabel = BRACKET_NODES[state.bracketNode] ? BRACKET_NODES[state.bracketNode].label : "KNOCKOUT STAGE";
+      const reachedLabel = isChamp ? "WORLD CHAMPIONS 🏆" : nodeLabel;
+      const rosterLines = ROLES.map(r => {
+        const p = state.roster[r];
+        return `${r}: ${p.name} (${p.team.edition} ${p.team.name})`;
+      }).join("\n");
+
+      const stageLines = state.tournamentHistory.map(st => {
+        const w = st.games.filter(g => g.won).length;
+        const l = st.games.filter(g => !g.won).length;
+        return `${st.label}: ${st.id === "GROUP" ? (w > 0 ? "Qualified (1st)" : "Qualified (2nd)") : `${w}-${l}`}`;
+      }).join(" | ");
+
+      const text = `M-SERIES MAYHEM — ${reachedLabel}\n${stageLines}\n\n${rosterLines}`;
+
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand("copy");
+        state.copyToast = "Recap copied to clipboard!";
+      } catch (e) {
+        state.copyToast = "Unable to copy summary.";
+      }
+      document.body.removeChild(textarea);
+      render();
+
+      const clearToast = setTimeout(() => {
+        state.copyToast = "";
+        render();
+      }, 2200);
+      activeTimers.push(clearToast);
+    }
+
+    // =========================================================================
+    // 7. UI RENDERERS
+    // =========================================================================
+    function render() {
+      const headerSub = document.getElementById("headerSub");
+      const headerTitle = document.getElementById("headerTitle");
+      const stageContainer = document.getElementById("stageContainer");
+      const mapWrapper = document.getElementById("mapWrapper");
+
+      const stats = calculateTeamStats(state.roster);
+      document.getElementById("teamOvrDisplay").textContent = stats.avgOvr > 0 ? `${stats.avgOvr} OVR` : "--";
+      const synContainer = document.getElementById("synergyBadges");
+      if (stats.synergies.length > 0) {
+        synContainer.innerHTML = stats.synergies
+          .map(s => `<span class="text-[10px] font-semibold px-2 py-0.5 rounded border ${s.color}">${s.label}</span>`)
+          .join("");
+      } else {
+        synContainer.innerHTML = `<span class="text-[10px] text-sky-200/80">${ROLES.filter(r => state.roster[r]).length}/5 Roles Drafted</span>`;
+      }
+
+      renderMapTokens();
+
+      if (state.phase === "SPIN") {
+        mapWrapper.classList.remove("hidden");
+        headerSub.textContent = `ROUND ${state.round} / 5`;
+        headerTitle.textContent = "SELECT A TEAM";
+        stageContainer.innerHTML = `
+          <div class="py-12 flex flex-col items-center justify-center">
+            <button id="spinBtn" onclick="handleSpin()" class="btn-spin w-56 py-4 rounded-md font-display text-lg font-bold tracking-[0.22em] uppercase cursor-pointer">
+              SPIN
+            </button>
+            <p class="mt-3 text-[11px] text-sky-200/80 tracking-wide">
+              Spin to draw 3 M-Series squads (M1 – M7)
+            </p>
+          </div>
+        `;
+      } else if (state.phase === "SPINNING_TEAMS") {
+        mapWrapper.classList.remove("hidden");
+        headerSub.textContent = `ROUND ${state.round} / 5`;
+        headerTitle.textContent = "DRAWING TEAMS...";
+        stageContainer.innerHTML = `
+          <div class="grid grid-cols-3 gap-2.5">
+            ${[0, 1, 2].map(idx => {
+              const t = state.spinSlots[idx];
+              const isLocked = state.spinLocked[idx];
+              return `
+                <div class="corner-card p-3 flex flex-col items-center justify-center text-center min-h-[132px] transition-all ${isLocked ? 'border-[#f5c451] bg-[#1a387a] scale-[1.02]' : 'slot-spinning'}">
+                  <span class="corner-tl"></span><span class="corner-tr"></span>
+                  <span class="corner-bl"></span><span class="corner-br"></span>
+                  <div class="${isLocked ? '' : 'reel-flash'} flex flex-col items-center">
+                    ${getTeamLogoSvg(t, 44)}
+                    <div class="font-display text-xs font-bold text-[#fffbeb] mt-2 leading-tight line-clamp-1">${t.name}</div>
+                    <div class="text-[10px] font-bold text-[#7dd3fc] mt-0.5">${t.edition} (${t.year})</div>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+          <div class="text-center py-1 text-[11px] font-bold tracking-widest text-[#fef08a] uppercase animate-pulse">
+            Randomizing M-Series Pool...
+          </div>
+        `;
+      } else if (state.phase === "PICK_TEAM") {
+        mapWrapper.classList.remove("hidden");
+        headerSub.textContent = `ROUND ${state.round} / 5`;
+        headerTitle.textContent = "SELECT A TEAM";
+        stageContainer.innerHTML = `
+          <div class="grid grid-cols-3 gap-2.5">
+            ${state.offeredTeams.map(t => `
+              <button onclick="handleSelectTeam('${t.id}')" class="corner-card p-3 flex flex-col items-center justify-center text-center cursor-pointer min-h-[132px]">
+                <span class="corner-tl"></span><span class="corner-tr"></span>
+                <span class="corner-bl"></span><span class="corner-br"></span>
+                ${getTeamLogoSvg(t, 44)}
+                <div class="font-display text-xs font-bold text-[#fffbeb] mt-2 leading-tight line-clamp-2">${t.name}</div>
+                <div class="text-[10px] font-bold text-[#7dd3fc] mt-0.5">${t.edition} (${t.year})</div>
+              </button>
+            `).join("")}
+          </div>
+          <button onclick="handleReroll()" ${state.rerolls <= 0 ? "disabled" : ""} class="btn-reroll w-full py-2.5 rounded-md text-xs font-bold tracking-widest uppercase cursor-pointer">
+            Reroll Teams (${state.rerolls} left)
+          </button>
+        `;
+      } else if (state.phase === "PICK_PLAYER") {
+        mapWrapper.classList.remove("hidden");
+        const t = state.selectedTeam;
+        headerSub.textContent = `ROUND ${state.round} / 5 • ${t.edition} ${t.name}`;
+        headerTitle.textContent = "SELECT A PLAYER";
+        stageContainer.innerHTML = `
+          <div class="grid grid-cols-5 gap-1.5">
+            ${t.players.map(p => {
+              const isTaken = Boolean(state.roster[p.pos]);
+              return `
+                <button onclick="handleSelectPlayer('${p.name.replace(/'/g, "\\'")}')" ${isTaken ? "disabled" : ""}
+                  class="corner-card overflow-hidden flex flex-col items-center text-center ${isTaken ? "opacity-35 grayscale cursor-not-allowed" : "cursor-pointer"}">
+                  <div class="relative w-full aspect-square bg-[#0e1f45] border-b border-sky-400/30">
+                    ${getPlayerPortraitSvg(p, t)}
+                    <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-black/80 border border-[#f5c451]/70 flex items-center justify-center">
+                      ${getRoleIconSvg(p.pos, 11)}
+                    </div>
+                    ${p.isSub ? `
+                      <div class="absolute top-1 right-1 px-1 py-0.2 rounded bg-amber-400 text-slate-950 text-[7.5px] font-black tracking-tighter">
+                        6TH
+                      </div>
+                    ` : ""}
+                    <div class="absolute bottom-1 right-1 px-1 rounded bg-black/80 text-[9px] font-extrabold text-[#fef08a]">
+                      ${p.ovr}
+                    </div>
+                  </div>
+                  <div class="p-1.5 w-full">
+                    <div class="text-[11px] font-bold text-white truncate">${p.name}</div>
+                    <div class="text-[9px] font-bold text-sky-300 mt-0.5">${p.pos}</div>
+                    <div class="text-[8px] text-[#fef08a] truncate">${t.short}</div>
+                  </div>
+                </button>
+              `;
+            }).join("")}
+          </div>
+          <div class="text-center text-[10px] text-sky-200">
+            Tap an available role card to lock them onto the Land of Dawn
+          </div>
+        `;
+      } else if (state.phase === "READY") {
+        mapWrapper.classList.remove("hidden");
+        headerSub.textContent = "ROSTER COMPLETE";
+        headerTitle.textContent = "READY FOR M-SERIES";
+        stageContainer.innerHTML = `
+          <div class="py-5 flex flex-col items-center text-center gap-3">
+            <div class="text-xs text-sky-100 max-w-xs leading-relaxed">
+              Your 5-man M-Series dream squad is locked in! Enter the Group Stage and battle through Double Elimination to lift the trophy.
+            </div>
+            <button onclick="startTournament()" class="btn-spin w-64 py-3.5 rounded-md font-display text-sm font-bold tracking-[0.2em] uppercase cursor-pointer">
+              ENTER TOURNAMENT
+            </button>
+          </div>
+        `;
+      } else if (state.phase === "STAGE_VS") {
+        mapWrapper.classList.add("hidden");
+        const nodeConfig = BRACKET_NODES[state.bracketNode];
+        const isGroup = state.vsStageMode === "GROUP";
+        const stillRolling = Object.values(state.oppSpinningRoles).some(Boolean);
+        const userStats = calculateTeamStats(state.roster);
+        const oppStats = calculateTeamStats(state.opponentRoster);
+
+        headerSub.textContent = isGroup ? "QUALIFIER MATCH • BO1" : `BEST OF ${nodeConfig.bestOf}`;
+        headerTitle.textContent = nodeConfig.label;
+
+        let bottomActionHtml = "";
+        if (stillRolling) {
+          bottomActionHtml = `
+            <button disabled class="btn-spin opacity-55 cursor-not-allowed w-full py-3.5 rounded-md font-display text-xs font-bold tracking-[0.2em] uppercase">
+              SCOUTING OPPONENT LINEUP...
+            </button>
+          `;
+        } else if (isGroup) {
+          if (state.groupMatchInProgress) {
+            bottomActionHtml = `
+              <div class="w-full py-3.5 rounded-md border border-[#f5c451]/60 bg-[#10234d] text-center font-display text-xs font-bold tracking-[0.18em] text-[#fef08a] uppercase animate-pulse">
+                SIMULATING GROUP STAGE MATCH...
+              </div>
+            `;
+          } else if (state.groupMatchResolved) {
+            bottomActionHtml = `
+              <div class="space-y-2.5">
+                <div class="rounded-md px-3 py-2.5 text-center border ${state.groupMatchWon ? 'bg-emerald-950/90 border-emerald-400 text-emerald-100' : 'bg-amber-950/90 border-amber-400 text-amber-100'}">
+                  <div class="font-display text-xs font-bold tracking-wider uppercase">
+                    ${state.groupMatchWon ? '1ST IN GROUP — UPPER BRACKET QUALIFIED!' : '2ND IN GROUP — LOWER BRACKET SEEDED'}
+                  </div>
+                </div>
+                <button onclick="proceedFromGroupStage()" class="btn-next-match w-full py-3.5 rounded-md font-display text-xs font-bold uppercase cursor-pointer">
+                  PROCEED TO KNOCKOUT STAGE ▸
+                </button>
+              </div>
+            `;
+          } else {
+            bottomActionHtml = `
+              <button onclick="handleStartVsMatch()" class="btn-spin w-full py-3.5 rounded-md font-display text-xs sm:text-sm font-bold tracking-[0.2em] uppercase cursor-pointer">
+                START GROUP MATCH
+              </button>
+            `;
+          }
+        } else {
+          bottomActionHtml = `
+            <button onclick="handleStartVsMatch()" class="btn-spin w-full py-3.5 rounded-md font-display text-xs sm:text-sm font-bold tracking-[0.2em] uppercase cursor-pointer">
+              START SERIES (BO${nodeConfig.bestOf})
+            </button>
+          `;
+        }
+
+        stageContainer.innerHTML = `
+          <div class="space-y-2.5">
+            <!-- Team Power Header Comparison -->
+            <div class="flex items-center justify-between px-3 py-2 rounded-lg bg-[#0c1b3d] border border-sky-400/30">
+              <div class="text-left">
+                <div class="text-[10px] font-bold tracking-wider text-sky-300 uppercase">YOUR SQUAD</div>
+                <div class="font-display text-sm font-bold text-[#fef08a]">
+                  ${userStats.avgOvr} OVR ${userStats.synergyBonus > 0 ? `<span class="text-[10px] text-emerald-300">(+${userStats.synergyBonus})</span>` : ""}
+                </div>
+              </div>
+              <div class="font-display text-base font-extrabold text-[#f5c451] tracking-widest">VS</div>
+              <div class="text-right">
+                <div class="text-[10px] font-bold tracking-wider text-rose-400 uppercase">
+                  ${state.opponentTag || (isGroup ? 'GROUP RIVAL' : 'CHALLENGER')}
+                </div>
+                <div class="font-display text-sm font-bold text-rose-200">
+                  ${stillRolling ? '?? OVR' : `${oppStats.avgOvr} OVR ${oppStats.synergyBonus > 0 ? `<span class="text-[10px] text-amber-300">(+${oppStats.synergyBonus})</span>` : ""}`}
+                </div>
+              </div>
+            </div>
+
+            ${!stillRolling && oppStats.synergies.length > 0 ? `
+              <div class="flex items-center justify-end gap-1 flex-wrap px-1">
+                <span class="text-[9px] font-bold uppercase tracking-wider text-rose-300/80">Enemy Chemistry:</span>
+                ${oppStats.synergies.map(s => `<span class="text-[9px] font-semibold px-1.5 py-0.5 rounded border ${s.color}">${s.label}</span>`).join("")}
+              </div>
+            ` : ""}
+
+            <!-- 5 Role-by-Role Faceoff Rows -->
+            <div class="space-y-1.5">
+              ${ROLES.map(role => {
+                const u = state.roster[role];
+                const e = state.opponentRoster[role];
+                const spinning = state.oppSpinningRoles[role];
+                const locked = state.oppLockedRoles[role];
+
+                return `
+                  <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-1.5 bg-[#091533] border border-sky-400/25 rounded-lg p-1.5">
+                    <!-- User Player (Left) -->
+                    <div class="flex items-center gap-2 min-w-0">
+                      <div class="w-9 h-9 rounded overflow-hidden border border-[#00d8ff] shrink-0">
+                        ${getPlayerPortraitSvg(u, u.team)}
+                      </div>
+                      <div class="min-w-0">
+                        <div class="text-xs font-bold text-white truncate">${u.name}</div>
+                        <div class="text-[9px] font-semibold text-[#fef08a] truncate">${u.team.edition} ${u.team.short} • ${u.ovr}</div>
+                      </div>
+                    </div>
+
+                    <!-- Center Role Emblem -->
+                    <div class="flex flex-col items-center justify-center px-1.5">
+                      ${getRoleIconSvg(role, 15)}
+                      <span class="text-[8px] font-extrabold text-sky-300 mt-0.5">${role}</span>
+                    </div>
+
+                    <!-- Randomized Opponent Player (Right) -->
+                    <div class="flex items-center justify-end gap-2 min-w-0 text-right ${spinning ? 'reel-flash' : ''}">
+                      <div class="min-w-0">
+                        <div class="text-xs font-bold ${spinning ? 'text-sky-300' : 'text-rose-100'} truncate">
+                          ${e ? e.name : '...'}
+                        </div>
+                        <div class="text-[9px] font-semibold ${locked ? 'text-amber-300' : 'text-rose-300/90'} truncate">
+                          ${e ? `${e.team.edition} ${e.team.short} • ${spinning ? '??' : e.ovr}` : ''}
+                        </div>
+                      </div>
+                      <div class="w-9 h-9 rounded overflow-hidden border ${locked ? 'border-amber-400' : 'border-rose-500/80'} shrink-0">
+                        ${e ? getPlayerPortraitSvg(e, e.team) : ''}
+                      </div>
+                    </div>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+
+            <div class="pt-1">
+              ${bottomActionHtml}
+            </div>
+          </div>
+        `;
+      } else if (state.phase === "KNOCKOUT") {
+        mapWrapper.classList.remove("hidden");
+        const nodeConfig = BRACKET_NODES[state.bracketNode];
+        const bo = state.boSeries;
+
+        headerSub.textContent = `BEST OF ${bo.bestOf} • GAME ${bo.currentGame}`;
+        headerTitle.textContent = nodeConfig.label;
+
+        let nextActionButtonHtml = "";
+        if (bo.waitingNextMatch) {
+          const isSeriesOver = bo.seriesClinched;
+          let btnLabel = `NEXT MATCH (GAME ${bo.currentGame + 1}) ▸`;
+          if (isSeriesOver) {
+            if (bo.userWins >= bo.winsNeeded) {
+              btnLabel = nodeConfig.nextWin === "CHAMPION" ? "CLAIM M-SERIES TROPHY 🏆" : "ADVANCE TO NEXT ROUND ▸";
+            } else {
+              btnLabel = nodeConfig.nextLoss === "ELIMINATED" ? "VIEW TOURNAMENT RECAP ▸" : "DROP TO LOWER BRACKET ▸";
+            }
+          }
+          nextActionButtonHtml = `
+            <button onclick="handleNextMatch()" class="btn-next-match w-full py-3.5 rounded-md font-display text-xs sm:text-sm font-bold uppercase cursor-pointer">
+              ${btnLabel}
+            </button>
+          `;
+        }
+
+        stageContainer.innerHTML = `
+          <div class="space-y-3">
+            <!-- Series Scoreboard Header -->
+            <div class="flex items-center justify-between bg-[#091533] border border-[#f5c451]/45 rounded-lg px-3 py-2">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#00d8ff]"></span>
+                <span class="text-xs font-extrabold text-white">YOUR SQUAD</span>
+                <span class="font-display text-base font-bold text-[#fef08a] ml-1">${bo.userWins}</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                ${Array.from({ length: bo.bestOf }).map((_, i) => {
+                  const res = bo.results[i];
+                  const cls = res === "W"
+                    ? "bg-emerald-400 border-emerald-200"
+                    : res === "L"
+                      ? "bg-rose-500 border-rose-300"
+                      : "bg-slate-800 border-slate-600";
+                  return `<span class="w-2.5 h-2.5 rounded-full border ${cls}"></span>`;
+                }).join("")}
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-display text-base font-bold text-rose-400 mr-1">${bo.enemyWins}</span>
+                <span class="text-xs font-extrabold text-rose-200">OPPONENT</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-[#ff3b4e]"></span>
+              </div>
+            </div>
+
+            <!-- Live 3 Deciding Events Feed -->
+            <div class="space-y-1.5 min-h-[132px] flex flex-col justify-center">
+              ${bo.events.length === 0 ? `
+                <div class="text-center py-6 text-xs text-sky-200/80 animate-pulse tracking-wider uppercase font-semibold">
+                  Deploying onto the Land of Dawn...
+                </div>
+              ` : bo.events.map(ev => `
+                <div class="${ev.win ? 'event-banner-win' : 'event-banner-loss'} rounded-md px-3 py-2.5 shadow">
+                  <p class="text-xs font-semibold leading-snug text-center">${ev.text}</p>
+                </div>
+              `).join("")}
+            </div>
+
+            ${nextActionButtonHtml}
+          </div>
+        `;
+      } else if (state.phase === "CHAMPION" || state.phase === "ELIMINATED") {
+        mapWrapper.classList.remove("hidden");
+        const isChamp = state.phase === "CHAMPION";
+        const reachedNode = BRACKET_NODES[state.bracketNode] ? BRACKET_NODES[state.bracketNode].label : "KNOCKOUT STAGE";
+        headerSub.textContent = isChamp ? "M-SERIES WORLD CHAMPIONS" : `ELIMINATED IN ${reachedNode}`;
+        headerTitle.textContent = isChamp ? "🏆 VICTORY" : "DEFEAT";
+
+        stageContainer.innerHTML = `
+          <div class="space-y-3">
+            <div class="corner-card p-4 text-center space-y-3">
+              <span class="corner-tl"></span><span class="corner-tr"></span>
+              <span class="corner-bl"></span><span class="corner-br"></span>
+              <div class="font-display text-lg font-bold ${isChamp ? 'text-[#fef08a]' : 'text-rose-300'}">
+                ${isChamp ? 'YOUR SQUAD LIFTED THE M-SERIES TROPHY!' : `YOUR RUN ENDED IN THE ${reachedNode}`}
+              </div>
+              <p class="text-xs text-sky-100 leading-relaxed">
+                ${isChamp
+                  ? 'An unforgettable 5-man M-Series crossover roster conquered the Land of Dawn.'
+                  : 'Draft stronger cross-era synergies or higher OVR stars to claim the crown next run!'}
+              </p>
+
+              <div class="flex flex-col sm:flex-row gap-2 pt-1">
+                <button onclick="toggleRecapDrawer()" class="flex-1 py-3 px-3 rounded-md border border-[#f5c451] bg-[#173370] text-[#fef08a] font-display text-xs font-bold tracking-[0.14em] uppercase hover:bg-[#1e40af] transition cursor-pointer">
+                  ${state.recapOpen ? 'HIDE TOURNAMENT RECAP ▲' : 'TOURNAMENT RECAP ▼'}
+                </button>
+                <button onclick="resetGame()" class="btn-spin flex-1 py-3 px-3 rounded-md font-display text-xs font-bold tracking-[0.16em] uppercase cursor-pointer">
+                  PLAY AGAIN
+                </button>
+              </div>
+            </div>
+
+            <!-- Collapsible Tournament Recap Accordion Drawer -->
+            ${state.recapOpen ? renderTournamentRecapAccordion() : ""}
+          </div>
+        `;
+      }
+    }
+
+    function renderTournamentRecapAccordion() {
+      return `
+        <div class="corner-card p-3 space-y-2.5 text-left">
+          <div class="flex items-center justify-between border-b border-sky-400/30 pb-2">
+            <span class="font-display text-xs font-bold tracking-widest text-[#fef08a] uppercase">
+              Tournament Run Recap
+            </span>
+            <button onclick="copyRecapSummary()" class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded border border-sky-400/50 bg-[#0d1f47] text-sky-200 hover:text-white cursor-pointer">
+              Copy Run
+            </button>
+          </div>
+
+          ${state.copyToast ? `
+            <div class="text-[11px] text-center font-semibold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 rounded py-1">
+              ${state.copyToast}
+            </div>
+          ` : ""}
+
+          <div class="space-y-2">
+            ${state.tournamentHistory.map(stage => {
+              const stageExpanded = state.expandedStages[stage.id] !== undefined ? state.expandedStages[stage.id] : true;
+              const resultDots = stage.games.map(g =>
+                `<span class="w-2.5 h-2.5 rounded-full inline-block ${g.won ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.75)]' : 'bg-rose-400 shadow-[0_0_6px_rgba(251,113,133,0.75)]'}"></span>`
+              ).join("");
+
+              return `
+                <div class="border border-sky-400/35 rounded-lg bg-[#0b1838] overflow-hidden shadow-md">
+                  <!-- Stage Header (e.g., UPPER SEMIFINALS + colored W/L dots) -->
+                  <button onclick="toggleRecapStage('${stage.id}')" class="w-full px-3 py-2.5 flex items-center justify-between bg-[#10234d] hover:bg-[#152d63] transition cursor-pointer">
+                    <span class="text-xs text-sky-300 w-4 text-left">${stageExpanded ? '▾' : '▸'}</span>
+                    <div class="flex flex-col items-center">
+                      <div class="font-display text-xs sm:text-sm font-bold tracking-[0.16em] text-[#fffbeb] uppercase">
+                        ${stage.label}
+                      </div>
+                      <div class="flex items-center gap-1.5 mt-1.5">
+                        ${resultDots}
+                      </div>
+                    </div>
+                    <span class="w-4"></span>
+                  </button>
+
+                  ${stageExpanded ? `
+                    <div class="p-2.5 border-t border-sky-400/25 space-y-2.5">
+                      <!-- 5-Card Visual Opponent Lineup Grid -->
+                      <div>
+                        <div class="text-center text-[10px] font-extrabold tracking-[0.22em] text-rose-400 uppercase mb-1.5">
+                          OPPONENT
+                        </div>
+                        <div class="grid grid-cols-5 gap-1">
+                          ${ROLES.map(r => {
+                            const opp = stage.opponentRoster[r];
+                            if (!opp) return "";
+                            return `
+                              <div class="border border-[#f5c451]/45 rounded bg-[#09142e] overflow-hidden flex flex-col items-center text-center">
+                                <div class="relative w-full aspect-square bg-[#0e1f45] border-b border-sky-400/25">
+                                  ${getPlayerPortraitSvg(opp, opp.team)}
+                                  <div class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-black/80 border border-[#f5c451]/60 flex items-center justify-center">
+                                    ${getRoleIconSvg(r, 10)}
+                                  </div>
+                                </div>
+                                <div class="p-1 w-full">
+                                  <div class="text-[9px] font-bold text-white truncate leading-tight">${opp.name}</div>
+                                  <div class="text-[8px] font-semibold text-[#fef08a] leading-tight mt-0.5">${opp.team.edition}</div>
+                                  <div class="text-[7.5px] text-sky-300 truncate leading-tight">${opp.team.short}</div>
+                                </div>
+                              </div>
+                            `;
+                          }).join("")}
+                        </div>
+                      </div>
+
+                      <!-- Per-Game Accordion Rows with Full-Width Event Recap Banners -->
+                      <div class="space-y-1.5">
+                        ${stage.games.map(g => {
+                          const gameKey = `${stage.id}_G${g.gameNum}`;
+                          const gameExpanded = Boolean(state.expandedGames[gameKey]);
+
+                          return `
+                            <div class="rounded-md border border-sky-400/25 bg-[#0e1f45] overflow-hidden">
+                              <button onclick="toggleRecapGame('${gameKey}')" class="w-full px-3 py-2 flex items-center justify-between text-xs cursor-pointer hover:bg-[#142b5e] transition">
+                                <span class="text-sky-300 text-[11px] w-4 text-left">${gameExpanded ? '▾' : '▸'}</span>
+                                <span class="font-display text-xs font-bold tracking-[0.18em] text-slate-200 uppercase">
+                                  GAME ${g.gameNum}
+                                </span>
+                                <span class="font-extrabold text-sm w-4 text-right ${g.won ? 'text-emerald-400' : 'text-rose-400'}">
+                                  ${g.won ? '✓' : '✗'}
+                                </span>
+                              </button>
+
+                              ${gameExpanded ? `
+                                <div class="px-2 pb-2.5 pt-1 space-y-1.5 border-t border-sky-400/15 bg-[#091533]">
+                                  ${g.events.map(ev => `
+                                    <div class="${ev.win ? 'event-banner-win' : 'event-banner-loss'} rounded px-3 py-2 text-center shadow-sm">
+                                      <p class="text-[11px] font-semibold leading-snug">
+                                        ${ev.text}
+                                      </p>
+                                    </div>
+                                  `).join("")}
+                                </div>
+                              ` : ""}
+                            </div>
+                          `;
+                        }).join("")}
+                      </div>
+                    </div>
+                  ` : ""}
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMapTokens() {
+      const layer = document.getElementById("mapTokensLayer");
+      let html = "";
+
+      // Dramatic Clash Shockwave & Floating Callout Badge during active match events
+      if (state.phase === "KNOCKOUT" && state.mapEffect) {
+        const fx = state.mapEffect;
+        html += `
+          <div key="${fx.id}" style="left:${fx.x}%; top:${fx.y}%;" class="absolute z-40 pointer-events-none">
+            <div class="w-16 h-16 rounded-full ${fx.win ? 'clash-ring-win' : 'clash-ring-loss'}"></div>
+            <div class="map-callout-badge whitespace-nowrap px-2.5 py-0.5 rounded-full font-display text-[10px] font-extrabold tracking-widest uppercase shadow-lg border ${fx.win ? 'bg-emerald-950/95 text-emerald-200 border-emerald-400' : 'bg-rose-950/95 text-rose-200 border-rose-400'}">
+              ${fx.callout}
+            </div>
+          </div>
+        `;
+      }
+
+      // Blue Team (User) Slots & Drafted Tokens
+      ROLES.forEach(role => {
+        const pos = state.liveBluePos[role];
+        const player = state.roster[role];
+        const isActing = state.activeBlueRoles.includes(role);
+
+        if (!player) {
+          html += `
+            <div style="left:${pos.x}%; top:${pos.y}%; transform:translate(-50%,-50%);"
+                 class="absolute flex flex-col items-center">
+              <div class="w-9 h-9 rounded-full bg-[#0b1736]/90 border-2 border-[#38bdf8] slot-pulse flex items-center justify-center shadow-lg">
+                ${getRoleIconSvg(role, 16)}
+              </div>
+              <span class="mt-0.5 text-[9px] font-extrabold tracking-wider px-1.5 py-0.2 rounded bg-black/85 text-sky-200 border border-sky-400/40">
+                ${role}
+              </span>
+            </div>
+          `;
+        } else {
+          html += `
+            <div style="left:${pos.x}%; top:${pos.y}%; transform:translate(-50%,-50%);"
+                 class="map-token-actor absolute flex flex-col items-center z-10 ${isActing ? 'token-event-active' : ''}">
+              <div class="avatar-ring w-11 h-11 rounded-full overflow-hidden border-2 border-[#00d8ff] bg-[#0b1736] shadow-[0_0_12px_rgba(0,216,255,0.65)]">
+                ${getPlayerPortraitSvg(player, player.team)}
+              </div>
+              <span class="-mt-1 text-[9px] font-extrabold px-1.5 rounded bg-[#07132e]/95 text-[#fffbeb] border border-[#f5c451] shadow">
+                ${player.name}
+              </span>
+            </div>
+          `;
+        }
+      });
+
+      // Red Team (Opponent) Tokens during Knockout Matches
+      if (state.phase === "KNOCKOUT") {
+        ROLES.forEach(role => {
+          const pos = state.liveRedPos[role];
+          const opp = state.opponentRoster[role];
+          const isActing = state.activeRedRoles.includes(role);
+          if (!opp) return;
+          html += `
+            <div style="left:${pos.x}%; top:${pos.y}%; transform:translate(-50%,-50%);"
+                 class="map-token-actor absolute flex flex-col items-center z-10 ${isActing ? 'token-event-active' : ''}">
+              <div class="avatar-ring w-10 h-10 rounded-full overflow-hidden border-2 border-[#ff3b4e] bg-[#2a0c13] shadow-[0_0_12px_rgba(255,59,78,0.65)]">
+                ${getPlayerPortraitSvg(opp, opp.team)}
+              </div>
+              <span class="-mt-1 text-[8px] font-bold px-1 rounded bg-rose-950/95 text-rose-100 border border-rose-500/80">
+                ${opp.name}
+              </span>
+            </div>
+          `;
+        });
+      }
+
+      layer.innerHTML = html;
+    }
+
+    // =========================================================================
+    // 8. CARDS & STATS MODAL
+    // =========================================================================
+    function openRosterModal() {
+      const modal = document.getElementById("rosterModal");
+      const body = document.getElementById("rosterModalBody");
+
+      const draftedRoles = ROLES.filter(r => state.roster[r]);
+      let html = "";
+
+      if (draftedRoles.length > 0) {
+        html += `<div class="text-[11px] font-bold uppercase tracking-widest text-[#fef08a]">Your Drafted Lineup</div>`;
+        draftedRoles.forEach(r => {
+          const p = state.roster[r];
+          html += renderPlayerCardDetail(p, p.team);
+        });
+      }
+
+      html += `<div class="text-[11px] font-bold uppercase tracking-widest text-sky-300 pt-2">All M-Series Teams (M1 – M7)</div>`;
+      M_SERIES_TEAMS.forEach(team => {
+        html += `
+          <div class="border border-sky-400/35 rounded-lg p-2.5 bg-[#0e1f45]">
+            <div class="flex items-center gap-2.5 mb-2">
+              ${getTeamLogoSvg(team, 34)}
+              <div>
+                <div class="font-display text-sm font-bold text-[#fffbeb]">${team.name}</div>
+                <div class="text-[10px] text-sky-300">${team.edition} (${team.year}) • ${team.region}</div>
+              </div>
+            </div>
+            <div class="space-y-1.5">
+              ${team.players.map(p => renderPlayerCardDetail(p, team)).join("")}
+            </div>
+          </div>
+        `;
+      });
+
+      body.innerHTML = html;
+      modal.classList.remove("hidden");
+    }
+
+    function renderPlayerCardDetail(p, team) {
+      return `
+        <div class="flex items-center gap-2.5 bg-[#091533] border border-sky-400/30 rounded p-2">
+          <div class="w-12 h-12 rounded overflow-hidden border border-[#f5c451]/60 shrink-0 relative">
+            ${getPlayerPortraitSvg(p, team)}
+            ${p.isSub ? `<span class="absolute top-0.5 right-0.5 bg-amber-400 text-slate-950 text-[7px] font-black px-1 rounded">6TH</span>` : ""}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs text-white truncate">${p.name}</span>
+              <span class="text-[10px] font-extrabold text-[#fef08a]">${p.pos} • ${p.ovr} OVR</span>
+            </div>
+            <div class="grid grid-cols-3 gap-1 mt-1 text-[9px] text-sky-200">
+              <span>MIC: <b class="text-white">${p.mic}</b></span>
+              <span>MAC: <b class="text-white">${p.mac}</b></span>
+              <span>SRV: <b class="text-white">${p.srv}</b></span>
+              <span>DPM: <b class="text-white">${p.dpm}</b></span>
+              <span>GPM: <b class="text-white">${p.gpm}</b></span>
+              <span>KP: <b class="text-white">${p.kp}%</b></span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function closeRosterModal() {
+      document.getElementById("rosterModal").classList.add("hidden");
+    }
+
+    // Initialize on load
+    window.onload = function () {
+      render();
+    };
+  </script>
+</body>
+</html>
